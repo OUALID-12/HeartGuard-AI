@@ -1,0 +1,11 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Admin — Pending Registrations</h1>
+    <p class="lead">This admin site is intentionally minimal. Use the link below to review pending registrations.</p>
+    <p>
+        <a href="{% url 'predictions:pending_registrations' %}" class="btn btn-primary btn-lg">Go to Pending Registrations</a>
+    </p>
+</div>
+{% endblock %}

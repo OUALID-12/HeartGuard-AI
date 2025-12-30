@@ -1,0 +1,172 @@
+{% extends 'predictions/base.html' %}
+
+{% block title %}Health Trends Dashboard - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-gradient-info text-white">
+            <h2 class="fw-bold mb-1">Public Health Trends</h2>
+            <p class="mb-0 opacity-75">Visualizing national health data and demographic benchmarks from recent
+                CDC/Census surveys.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- National Trend Chart -->
+    <div class="col-lg-12">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-primary">National Estimate Trends</h5>
+                <span class="badge bg-primary rounded-pill">Over Time</span>
+            </div>
+            <div class="card-body p-4">
+                <div style="height: 400px;">
+                    <canvas id="nationalChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Age Breakdown -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-success">Prevalence by Age Group</h5>
+            </div>
+            <div class="card-body p-4">
+                <div style="height: 300px;">
+                    <canvas id="ageTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gender Breakdown -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-info">Prevalence by Gender</h5>
+            </div>
+            <div class="card-body p-4">
+                <div style="height: 300px;">
+                    <canvas id="sexTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Extra Insights -->
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <h6 class="text-uppercase text-muted fw-bold small mb-3">Data Source</h6>
+            <p class="mb-0">This data is sourced from the **U.S. Census Bureau** and the **National Center for Health
+                Statistics (NCHS)**.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <h6 class="text-uppercase text-muted fw-bold small mb-3">Update Frequency</h6>
+            <p class="mb-0">The datasets are updated periodically to reflect the latest "Phase" of the Household Pulse
+                Survey.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white text-center">
+            <a href="{% url 'predictions:assessment' %}" class="btn btn-primary rounded-pill px-4 mt-2">Take Personal
+                Assessment</a>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Helper to extract data from Django context
+    const nationalData = {{ national| safe }};
+    const ageData = {{ age| safe }};
+    const sexData = {{ sex| safe }};
+
+    // 1. National Trend Line Chart
+    new Chart(document.getElementById('nationalChart'), {
+        type: 'line',
+        data: {
+            labels: nationalData.labels,
+            datasets: [{
+                label: 'National Percentage (%)',
+                data: nationalData.values,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            scales: {
+                y: { beginAtZero: false, grid: { borderDash: [5, 5] } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Age Breakdown Bar Chart
+    new Chart(document.getElementById('ageTrendChart'), {
+        type: 'bar',
+        data: {
+            labels: ageData.labels,
+            datasets: [{
+                label: 'Prevalence (%)',
+                data: ageData.values,
+                backgroundColor: '#198754',
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Sex Breakdown Bar Chart
+    new Chart(document.getElementById('sexTrendChart'), {
+        type: 'bar',
+        data: {
+            labels: sexData.labels,
+            datasets: [{
+                label: 'Prevalence (%)',
+                data: sexData.values,
+                backgroundColor: '#0dcaf0',
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+
+<style>
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #0dcaf0 0%, #0093af 100%);
+    }
+</style>
+{% endblock %}

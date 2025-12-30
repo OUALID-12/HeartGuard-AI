@@ -1,0 +1,209 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block title %}Health History - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold text-dark mb-1">Health Journey History</h1>
+                <p class="text-muted mb-0">Track all your assessments, detections, and pharmacy searches in one place.
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <form class="d-flex align-items-center me-2">
+                    <select name="patient" class="form-select rounded-pill shadow-sm pe-5"
+                        onchange="this.form.submit()">
+                        <option value="All" {% if selected_patient == "All" %}selected{% endif %}>All Patients</option>
+                        {% for name in patient_names %}
+                        <option value="{{ name }}" {% if selected_patient == name %}selected{% endif %}>{{ name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+                <a href="{% url 'predictions:export_pdf' %}" class="btn btn-outline-danger rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-file-pdf me-2"></i> Report
+                </a>
+                <a href="{% url 'predictions:predict' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-plus me-2"></i> Check
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-primary text-white">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-white bg-opacity-20 p-3 me-3">
+                            <i class="fas fa-heartbeat fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4">{{ predictions_count }}</div>
+                            <div class="small opacity-75">Predictions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-success text-white">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-white bg-opacity-20 p-3 me-3">
+                            <i class="fas fa-brain fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4">{{ assessments_count }}</div>
+                            <div class="small opacity-75">Stress Tests</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-info text-white">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle bg-white bg-opacity-20 p-3 me-3">
+                            <i class="fas fa-pills fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-4">{{ lab_count }}</div>
+                            <div class="small opacity-75">Lab Searches</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-container">
+            {% for entry in timeline %}
+            <div class="timeline-item mb-4 animate__animated animate__fadeInUp">
+                <div
+                    class="card border-0 shadow-sm rounded-4 overflow-hidden border-start border-4 
+                    {% if entry.type == 'prediction' %}border-primary{% elif entry.type == 'assessment' %}border-success{% else %}border-info{% endif %}">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="timeline-icon rounded-circle d-flex align-items-center justify-content-center {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}bg-info{% endif %} text-white"
+                                    style="width: 50px; height: 50px;">
+                                    {% if entry.type == 'prediction' %}
+                                    <i class="fas fa-stethoscope"></i>
+                                    {% elif entry.type == 'assessment' %}
+                                    <i class="fas fa-clipboard-check"></i>
+                                    {% else %}
+                                    <i class="fas fa-search"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">{{ entry.title }}</h5>
+                                        <div class="small text-muted">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            {% if entry.type == 'prediction' and entry.dob %}
+                                            Born {{ entry.dob|date:"F d, Y" }}
+                                            {% else %}
+                                            {{ entry.date|date:"F d, Y @ H:i" }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span
+                                            class="badge rounded-pill px-3 py-2 {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}bg-info{% endif %} bg-opacity-10 {% if entry.type == 'prediction' %}text-primary{% elif entry.type == 'assessment' %}text-success{% else %}text-info{% endif %} border {% if entry.type == 'prediction' %}border-primary{% elif entry.type == 'assessment' %}border-success{% else %}border-info{% endif %} border-opacity-25">
+                                            {{ entry.result|default:entry.type|title }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr class="my-3 opacity-10">
+                                <div class="row g-3">
+                                    {% if entry.type == 'prediction' %}
+                                    <div class="col-md-4">
+                                        <div class="small text-muted text-uppercase fw-bold">Probability</div>
+                                        <div class="fw-bold">{{ entry.probability }}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted text-uppercase fw-bold">Patient</div>
+                                        <div class="fw-bold">{% if entry.name %}{{ entry.name }}{% else %}Unknown{% endif %}</div>
+                                        <div class="small text-muted">{% if entry.dob %}Born {{ entry.dob|date:"F d, Y" }}{% endif %}</div>
+                                    </div>
+                                    {% elif entry.type == 'assessment' %}
+                                    <div class="col-md-4">
+                                        <div class="small text-muted text-uppercase fw-bold">Mental Scores</div>
+                                        <div class="fw-bold">{{ entry.score }}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted text-uppercase fw-bold">Wellness Score</div>
+                                        <div class="fw-bold">{{ entry.obj.wellness_score }}/6</div>
+                                    </div>
+                                    {% elif entry.type == 'lab' %}
+                                    <div class="col-md-8">
+                                        <div class="small text-muted text-uppercase fw-bold">Search Query</div>
+                                        <div class="fw-bold text-truncate" style="max-width: 400px;">"{{ entry.query }}"
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted text-uppercase fw-bold">Matches Found</div>
+                                        <div class="fw-bold">{{ entry.results }} medications</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-history fa-4x text-muted opacity-25"></i>
+                </div>
+                <h3>Your history is empty</h3>
+                <p class="text-muted">Start using CardioAI tools to build your personalized health journey.</p>
+                <a href="{% url 'predictions:home' %}" class="btn btn-primary rounded-pill px-5 mt-3">Get Started</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline-container {
+        position: relative;
+        padding-left: 20px;
+    }
+
+    .timeline-container::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .timeline-item {
+        transition: transform 0.2s;
+    }
+
+    .timeline-item:hover {
+        transform: translateX(5px);
+    }
+
+    .animate__fadeInUp {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

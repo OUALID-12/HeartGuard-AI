@@ -1,0 +1,77 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block title %}Register - HeartGuard AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white p-5 text-center">
+                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style="width: 80px; height: 80px;">
+                    <i class="fas fa-user-plus fs-1"></i>
+                </div>
+                <h2 class="fw-bold mb-1">Create Account</h2>
+                <p class="mb-0 opacity-75">Join HeartGuard AI today</p>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}"
+                            class="form-label fw-bold text-secondary small text-uppercase">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>New accounts require administrator approval before access is granted.</small>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit"
+                            class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm py-3 transition-transform hover-scale">
+                            Register Account
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <p class="text-muted mb-0">Already have an account?</p>
+                        <a href="{% url 'predictions:login' %}" class="fw-bold text-decoration-none">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        padding: 0.75rem 1rem;
+        border-color: #d1d3e2;
+    }
+
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+    }
+
+    ul.errorlist {
+        list-style: none;
+        padding: 0;
+        margin-top: 5px;
+        color: #e74a3b;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

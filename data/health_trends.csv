@@ -1,0 +1,73 @@
+Group,State,Subgroup,Phase,Time Period,Time Period Label,Time Period Start Date,Time Period End Date,Value,LowCI,HighCI,Confidence Interval,Quartile Range
+National Estimate,United States,United States,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.4,19,19.8,19.0 - 19.8,
+By Age,United States,18 - 29 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.7,17.2,20.3,17.2 - 20.3,
+By Age,United States,30 - 39 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.3,17.3,19.2,17.3 - 19.2,
+By Age,United States,40 - 49 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.4,19.5,21.3,19.5 - 21.3,
+By Age,United States,50 - 59 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.2,20.2,22.2,20.2 - 22.2,
+By Age,United States,60 - 69 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.7,18.7,20.7,18.7 - 20.7,
+By Age,United States,70 - 79 years,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.4,17,19.9,17.0 - 19.9,
+By Age,United States,80 years and above,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,13.8,11,17,11.0 - 17.0,
+By Sex,United States,Male,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,13.7,13,14.3,13.0 - 14.3,
+By Sex,United States,Female,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,24.6,24,25.2,24.0 - 25.2,
+By Presence of Symptoms of Anxiety/Depression,United States,Did not experience symptoms of anxiety/depression in the past 4 weeks,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,11.6,11.2,12.1,11.2 - 12.1,
+By Presence of Symptoms of Anxiety/Depression,United States,Experienced symptoms of anxiety/depression in past 4 weeks,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,33,32.1,33.9,32.1 - 33.9,
+By Race/Hispanic ethnicity,United States,Hispanic or Latino,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,13.8,12.6,15,12.6 - 15.0,
+By Race/Hispanic ethnicity,United States,"Non-Hispanic White, single race",2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.5,22.1,23,22.1 - 23.0,
+By Race/Hispanic ethnicity,United States,"Non-Hispanic Black, single race",2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,12.6,11.4,13.9,11.4 - 13.9,
+By Race/Hispanic ethnicity,United States,"Non-Hispanic Asian, single race",2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,8.1,6.9,9.4,6.9 - 9.4,
+By Race/Hispanic ethnicity,United States,"Non-Hispanic, other races and multiple races",2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.1,19.3,25.2,19.3 - 25.2,
+By Education,United States,Less than a high school diploma,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17.4,14.9,20.1,14.9 - 20.1,
+By Education,United States,High school diploma or GED,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.1,17.2,19.1,17.2 - 19.1,
+By Education,United States,Some college/Associate's degree,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21,20.2,21.8,20.2 - 21.8,
+By Education,United States,Bachelor's degree or higher,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.4,19,19.9,19.0 - 19.9,
+By State,Alabama,Alabama,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.3,19.6,25.1,19.6 - 25.1,20.6-22.5
+By State,Alaska,Alaska,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,16.7,14.2,19.5,14.2 - 19.5,12.2-18.4
+By State,Arizona,Arizona,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.3,16.1,20.7,16.1 - 20.7,12.2-18.4
+By State,Arkansas,Arkansas,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,24.1,20.8,27.7,20.8 - 27.7,22.6-26.8
+By State,California,California,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,15.8,14.4,17.4,14.4 - 17.4,12.2-18.4
+By State,Colorado,Colorado,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17,15.1,19.1,15.1 - 19.1,12.2-18.4
+By State,Connecticut,Connecticut,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.8,15.7,22.3,15.7 - 22.3,18.5-20.5
+By State,Delaware,Delaware,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.8,16.4,23.6,16.4 - 23.6,18.5-20.5
+By State,District of Columbia,District of Columbia,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18,13.8,22.8,13.8 - 22.8,12.2-18.4
+By State,Florida,Florida,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19,16.4,21.7,16.4 - 21.7,18.5-20.5
+By State,Georgia,Georgia,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.1,18.5,23.9,18.5 - 23.9,20.6-22.5
+By State,Hawaii,Hawaii,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,12.2,9.8,15,9.8 - 15.0,12.2-18.4
+By State,Idaho,Idaho,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.5,19.8,25.4,19.8 - 25.4,20.6-22.5
+By State,Illinois,Illinois,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17.2,14.9,19.6,14.9 - 19.6,12.2-18.4
+By State,Indiana,Indiana,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.5,20.7,26.4,20.7 - 26.4,22.6-26.8
+By State,Iowa,Iowa,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.1,19.9,26.5,19.9 - 26.5,22.6-26.8
+By State,Kansas,Kansas,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.2,17.9,24.7,17.9 - 24.7,20.6-22.5
+By State,Kentucky,Kentucky,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,26.8,23,30.9,23.0 - 30.9,22.6-26.8
+By State,Louisiana,Louisiana,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.6,20.6,26.9,20.6 - 26.9,22.6-26.8
+By State,Maine,Maine,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.1,19.4,27.1,19.4 - 27.1,22.6-26.8
+By State,Maryland,Maryland,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17.1,15.1,19.3,15.1 - 19.3,12.2-18.4
+By State,Massachusetts,Massachusetts,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.9,18,21.9,18.0 - 21.9,18.5-20.5
+By State,Michigan,Michigan,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.4,17.7,23.3,17.7 - 23.3,18.5-20.5
+By State,Minnesota,Minnesota,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.6,18.3,23,18.3 - 23.0,20.6-22.5
+By State,Mississippi,Mississippi,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.8,17.4,24.7,17.4 - 24.7,20.6-22.5
+By State,Missouri,Missouri,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.7,21,26.6,21.0 - 26.6,22.6-26.8
+By State,Montana,Montana,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.4,15.5,21.5,15.5 - 21.5,12.2-18.4
+By State,Nebraska,Nebraska,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.6,20.1,27.3,20.1 - 27.3,22.6-26.8
+By State,Nevada,Nevada,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,15,12.8,17.5,12.8 - 17.5,12.2-18.4
+By State,New Hampshire,New Hampshire,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.1,17.4,25.2,17.4 - 25.2,20.6-22.5
+By State,New Jersey,New Jersey,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.7,16.2,21.5,16.2 - 21.5,18.5-20.5
+By State,New Mexico,New Mexico,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.5,15.5,21.9,15.5 - 21.9,18.5-20.5
+By State,New York,New York,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17.8,15.3,20.5,15.3 - 20.5,12.2-18.4
+By State,North Carolina,North Carolina,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.4,16.7,22.3,16.7 - 22.3,18.5-20.5
+By State,North Dakota,North Dakota,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.6,15.8,23.9,15.8 - 23.9,18.5-20.5
+By State,Ohio,Ohio,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.7,18.4,25.4,18.4 - 25.4,20.6-22.5
+By State,Oklahoma,Oklahoma,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.9,19.1,24.8,19.1 - 24.8,20.6-22.5
+By State,Oregon,Oregon,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.9,20.1,25.9,20.1 - 25.9,22.6-26.8
+By State,Pennsylvania,Pennsylvania,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.1,19.1,25.3,19.1 - 25.3,20.6-22.5
+By State,Rhode Island,Rhode Island,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.1,19.4,27.2,19.4 - 27.2,22.6-26.8
+By State,South Carolina,South Carolina,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.5,17.8,23.4,17.8 - 23.4,18.5-20.5
+By State,South Dakota,South Dakota,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,17.8,14.2,21.7,14.2 - 21.7,12.2-18.4
+By State,Tennessee,Tennessee,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,21.2,18.4,24.1,18.4 - 24.1,20.6-22.5
+By State,Texas,Texas,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,16.4,14.4,18.5,14.4 - 18.5,12.2-18.4
+By State,Utah,Utah,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.9,21.1,26.8,21.1 - 26.8,22.6-26.8
+By State,Vermont,Vermont,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,23.2,18.5,28.5,18.5 - 28.5,22.6-26.8
+By State,Virginia,Virginia,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.9,16.6,21.5,16.6 - 21.5,18.5-20.5
+By State,Washington,Washington,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,20.9,19.3,22.6,19.3 - 22.6,20.6-22.5
+By State,West Virginia,West Virginia,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,22.4,18.8,26.3,18.8 - 26.3,20.6-22.5
+By State,Wisconsin,Wisconsin,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,19.7,17.3,22.2,17.3 - 22.2,18.5-20.5
+By State,Wyoming,Wyoming,2,13,"Aug 19 - Aug 31, 2020",08/19/2020,08/31/2020,18.7,15,22.7,15.0 - 22.7,18.5-20.5

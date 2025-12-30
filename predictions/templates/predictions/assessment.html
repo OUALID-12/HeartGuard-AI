@@ -1,0 +1,250 @@
+{% extends 'predictions/base.html' %}
+
+{% block title %}Mental Health Risk Assessment - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-primary text-white p-4">
+                <h3 class="fw-bold mb-1">Comprehensive Health Screening</h3>
+                <p class="mb-0 opacity-75">Detailed assessment of mental wellbeing and lifestyle habits.</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <form action="{% url 'predictions:assessment_result' %}" method="POST">
+                    {% csrf_token %}
+
+                    <!-- PHQ-2 -->
+                    <h5 class="fw-bold mb-4 text-primary">Over the last 2 weeks, how often have you been bothered by:
+                    </h5>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">1. Little interest or pleasure in doing things?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq1" value="0" id="phq1_0"
+                                    required>
+                                <label class="form-check-label" for="phq1_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq1" value="1"
+                                    id="phq1_1">
+                                <label class="form-check-label" for="phq1_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq1" value="2"
+                                    id="phq1_2">
+                                <label class="form-check-label" for="phq1_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq1" value="3"
+                                    id="phq1_3">
+                                <label class="form-check-label" for="phq1_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHQ-2 Question 2 -->
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">2. Feeling down, depressed, or hopeless?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq2" value="0" id="phq2_0"
+                                    required>
+                                <label class="form-check-label" for="phq2_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq2" value="1"
+                                    id="phq2_1">
+                                <label class="form-check-label" for="phq2_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq2" value="2"
+                                    id="phq2_2">
+                                <label class="form-check-label" for="phq2_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq2" value="3"
+                                    id="phq2_3">
+                                <label class="form-check-label" for="phq2_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional PHQ Questions -->
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">3. Trouble falling or staying asleep, or sleeping too
+                            much?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq3" value="0" id="phq3_0"
+                                    required>
+                                <label class="form-check-label" for="phq3_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq3" value="1"
+                                    id="phq3_1">
+                                <label class="form-check-label" for="phq3_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq3" value="2"
+                                    id="phq3_2">
+                                <label class="form-check-label" for="phq3_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq3" value="3"
+                                    id="phq3_3">
+                                <label class="form-check-label" for="phq3_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">4. Feeling tired or having little energy?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq4" value="0" id="phq4_0"
+                                    required>
+                                <label class="form-check-label" for="phq4_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq4" value="1"
+                                    id="phq4_1">
+                                <label class="form-check-label" for="phq4_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq4" value="2"
+                                    id="phq4_2">
+                                <label class="form-check-label" for="phq4_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phq4" value="3"
+                                    id="phq4_3">
+                                <label class="form-check-label" for="phq4_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-4 text-primary">During the last 2 weeks, how often have you been bothered by:
+                    </h5>
+
+                    <!-- GAD-2 Question 3 -->
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">5. Feeling nervous, anxious or on edge?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad1" value="0" id="gad1_0"
+                                    required>
+                                <label class="form-check-label" for="gad1_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad1" value="1"
+                                    id="gad1_1">
+                                <label class="form-check-label" for="gad1_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad1" value="2"
+                                    id="gad1_2">
+                                <label class="form-check-label" for="gad1_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad1" value="3"
+                                    id="gad1_3">
+                                <label class="form-check-label" for="gad1_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GAD-2 Question 4 -->
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">6. Not being able to stop or control worrying?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad2" value="0" id="gad2_0"
+                                    required>
+                                <label class="form-check-label" for="gad2_0">Not at all</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad2" value="1"
+                                    id="gad2_1">
+                                <label class="form-check-label" for="gad2_1">Several days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad2" value="2"
+                                    id="gad2_2">
+                                <label class="form-check-label" for="gad2_2">More than half the days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="gad2" value="3"
+                                    id="gad2_3">
+                                <label class="form-check-label" for="gad2_3">Nearly every day</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-4 text-success">Lifestyle & Physical Wellness:</h5>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">7. How many days a week do you perform physical exercise
+                            (30+ mins)?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys1" value="0"
+                                    id="phys1_0" required>
+                                <label class="form-check-label" for="phys1_0">0 days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys1" value="1"
+                                    id="phys1_1">
+                                <label class="form-check-label" for="phys1_1">1-2 days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys1" value="2"
+                                    id="phys1_2">
+                                <label class="form-check-label" for="phys1_2">3-4 days</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys1" value="3"
+                                    id="phys1_3">
+                                <label class="form-check-label" for="phys1_3">5+ days</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-semibold">8. How would you rate the overall quality of your
+                            diet?</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys2" value="0"
+                                    id="phys2_0" required>
+                                <label class="form-check-label" for="phys2_0">Poor</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys2" value="1"
+                                    id="phys2_1">
+                                <label class="form-check-label" for="phys2_1">Fair</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys2" value="2"
+                                    id="phys2_2">
+                                <label class="form-check-label" for="phys2_2">Good</label>
+                            </div>
+                            <div class="form-check border rounded-3 p-3 flex-grow-1">
+                                <input class="form-check-input ms-0 me-2" type="radio" name="phys2" value="3"
+                                    id="phys2_3">
+                                <label class="form-check-label" for="phys2_3">Excellent</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow">Calculate
+                            Results</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

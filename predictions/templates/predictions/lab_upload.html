@@ -1,0 +1,146 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block title %}Medical Lab - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-7">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-pills nav-fill mb-4 bg-white p-2 rounded-pill shadow-sm" id="labTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold" id="recommend-tab" data-bs-toggle="pill"
+                    data-bs-target="#recommend" type="button" role="tab">
+                    <i class="fas fa-pills me-2"></i>Recommendations
+                </button>
+            </li>
+
+        </ul>
+
+        <div class="tab-content" id="labTabsContent">
+            <!-- Recommendations Tab -->
+            <div class="tab-pane fade show active" id="recommend" role="tabpanel">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-primary text-white p-4 text-center">
+                        <h4 class="fw-bold mb-0">Diagnostic Analysis</h4>
+                        <p class="mb-0 small opacity-75">Upload PDF or describe your condition</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" id="lab-form">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="patient_name" class="form-label fw-bold">Patient Name</label>
+                                <input type="text" name="patient_name" id="patient_name"
+                                    class="form-control rounded-pill border-2 shadow-sm"
+                                    placeholder="Optional: Name (e.g. Grandma)">
+                            </div>
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-bold">Identify Malady / Condition</label>
+                                <textarea name="description" id="description"
+                                    class="form-control rounded-4 border-2 shadow-sm" rows="3"
+                                    placeholder="Examples: Fever, Hypertension, Infection, etc..."></textarea>
+                            </div>
+
+                            <div class="mb-4 text-center">
+                                <label for="medical_file" class="form-label d-block mb-3">
+                                    <div class="upload-zone border-2 border-dashed rounded-4 p-4 bg-light transition-all cursor-pointer"
+                                        id="drop-zone">
+                                        <i class="fas fa-file-pdf fs-1 text-danger mb-3"></i>
+                                        <h5 class="fw-bold text-dark mb-1">Upload Diagnostic PDF</h5>
+                                        <p class="text-muted small mb-0">Drag and drop report here</p>
+                                    </div>
+                                </label>
+                                <input type="file" name="medical_file" id="medical_file" class="d-none" accept=".pdf">
+                            </div>
+
+                            <div id="file-name-container" class="alert alert-danger d-none mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf fs-4 me-3"></i>
+                                    <div class="flex-grow-1 small">
+                                        <div class="fw-bold" id="name-text">report.pdf</div>
+                                    </div>
+                                    <button type="button" class="btn-close" id="clear-file"></button>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary rounded-pill fw-bold py-3">
+                                    Start Analysis <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    // Recommendation Logic (Existing)
+    const fileInput = document.getElementById('medical_file');
+    const dropZone = document.getElementById('drop-zone');
+    const fileNameDiv = document.getElementById('file-name-container');
+    const fileNameText = document.getElementById('name-text');
+    const clearBtn = document.getElementById('clear-file');
+    const labForm = document.getElementById('lab-form');
+    const descriptionInput = document.getElementById('description');
+
+    fileInput.onchange = e => {
+        if (fileInput.files.length > 0) {
+            fileNameText.textContent = fileInput.files[0].name;
+            fileNameDiv.classList.remove('d-none');
+            dropZone.classList.add('d-none');
+        }
+    };
+
+    clearBtn.onclick = () => {
+        fileInput.value = '';
+        fileNameDiv.classList.add('d-none');
+        dropZone.classList.remove('d-none');
+    };
+
+    labForm.onsubmit = e => {
+        if (!descriptionInput.value.trim() && fileInput.files.length === 0) {
+            e.preventDefault();
+            alert('Please provide a description OR upload a PDF file.');
+            return false;
+        }
+    };
+
+;
+
+    // Drag and drop fix
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
+    });
+    dropZone.addEventListener('drop', e => {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+    });
+</script>
+
+<style>
+    .upload-zone:hover {
+        background-color: #f1f3f9 !important;
+        border-color: var(--bs-primary) !important;
+        transform: translateY(-2px);
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--bs-primary);
+    }
+
+    #labTabs .nav-link:not(.active) {
+        color: #666;
+    }
+
+    .nav-pills .nav-link {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

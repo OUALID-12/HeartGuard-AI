@@ -1,0 +1,175 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow border-0" style="height: 600px; display: flex; flex-direction: column;">
+            <div class="card-header bg-white py-3 border-0 d-flex align-items-center">
+                <div class="icon-shape bg-light text-primary rounded-circle me-3 p-3">
+                    <i class="fas fa-robot fa-lg"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0 fw-bold">CardioAI Assistant</h4>
+                    <small class="text-success inline-flex align-items-center">
+                        <span class="d-inline-block bg-success rounded-circle me-1"
+                            style="width: 8px; height: 8px;"></span>
+                        Online & Ready to Help
+                    </small>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div id="chat-container" class="card-body p-4 overflow-auto bg-light"
+                style="flex: 1; border-top: 1px solid #eee;">
+                <div class="message bot-message mb-3">
+                    <div class="d-flex align-items-start">
+                        <div class="avatar bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center"
+                            style="width: 35px; height: 35px;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content bg-white p-3 rounded-4 shadow-sm" style="max-width: 80%;">
+                            Hello! I am your CardioAI medical assistant. You can ask me anything about heart diseases,
+                            symptoms, prevention, or medical terms. How can I help you today?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="card-footer bg-white border-0 p-3">
+                <form id="chat-form" class="d-flex gap-2">
+                    <input type="text" id="user-input" class="form-control form-control-lg rounded-pill border-2"
+                        placeholder="Ask about heart health..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-circle"
+                        style="width: 50px; height: 50px;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .message-content {
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .user-message .message-content {
+        background-color: #4e73df !important;
+        color: white;
+    }
+
+    .bot-message .message-content {
+        background-color: white !important;
+        color: #333;
+    }
+
+    .user-message .d-flex {
+        flex-direction: row-reverse;
+    }
+
+    .user-message .avatar {
+        margin-right: 0 !important;
+        margin-left: 0.5rem;
+    }
+
+    #chat-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #chat-container::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border-radius: 10px;
+    }
+</style>
+
+<script>
+    document.getElementById('chat-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const input = document.getElementById('user-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Add user message to UI
+        addMessage(message, 'user');
+        input.value = '';
+
+        // Show typing indicator
+        const typingId = showTyping();
+
+        // Send to backend
+        fetch("{% url 'predictions:chatbot_api' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ message: message })
+        })
+            .then(response => response.json())
+            .then(data => {
+                removeTyping(typingId);
+                addMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                removeTyping(typingId);
+                addMessage("Sorry, I encountered an error. Please try again.", 'bot');
+            });
+    });
+
+    function addMessage(text, sender) {
+        const container = document.getElementById('chat-container');
+        const div = document.createElement('div');
+        div.className = `message ${sender}-message mb-3 animate__animated animate__fadeInUp`;
+
+        const isBot = sender === 'bot';
+        const icon = isBot ? 'robot' : 'user';
+        const bgColor = isBot ? 'primary' : 'secondary';
+
+        div.innerHTML = `
+        <div class="d-flex align-items-start">
+            <div class="avatar bg-${bgColor} text-white rounded-circle ${isBot ? 'me-2' : 'ms-2'} d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; flex-shrink: 0;">
+                <i class="fas fa-${icon}"></i>
+            </div>
+            <div class="message-content p-3 rounded-4 shadow-sm" style="max-width: 80%;">
+                ${text.replace(/\n/g, '<br>')}
+            </div>
+        </div>
+    `;
+
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showTyping() {
+        const id = 'typing-' + Date.now();
+        const container = document.getElementById('chat-container');
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = `message bot-message mb-3`;
+        div.innerHTML = `
+        <div class="d-flex align-items-start">
+            <div class="avatar bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content bg-white p-3 rounded-4 shadow-sm">
+                <div class="typing-dots">
+                    <span>.</span><span>.</span><span>.</span>
+                </div>
+            </div>
+        </div>
+    `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return id;
+    }
+
+    function removeTyping(id) {
+        const element = document.getElementById(id);
+        if (element) element.remove();
+    }
+</script>
+{% endblock %}

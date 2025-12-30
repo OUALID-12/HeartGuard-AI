@@ -1,0 +1,26 @@
+
+# Data
+# data/
+*.xlsx
+
+
+# Models
+*.pkl
+*.h5
+*.joblib
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Jupyter
+.ipynb_checkpoints

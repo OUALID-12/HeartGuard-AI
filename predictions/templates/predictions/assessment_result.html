@@ -1,0 +1,111 @@
+{% extends 'predictions/base.html' %}
+
+{% block title %}Assessment Results - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Result Summary -->
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+            <div class="card-body p-5 text-center">
+                {% if has_symptoms %}
+                <div class="display-1 text-danger mb-4">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h2 class="fw-bold mb-3">Screening Indicates Elevated Risk</h2>
+                <p class="lead text-muted mb-4">Your responses suggest that you may be experiencing symptoms of anxiety
+                    or depression. We recommend speaking with a healthcare professional.</p>
+                {% else %}
+                <div class="display-1 text-success mb-4">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h2 class="fw-bold mb-3">Low Risk Detected</h2>
+                <p class="lead text-muted mb-4">Your screening results are within the normal range. Continue maintaining
+                    your mental well-being alongside your heart health.</p>
+                {% endif %}
+
+                <div class="row g-3 justify-content-center mt-2">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <small class="text-uppercase text-muted fw-bold">Mental Wellbeing</small>
+                            <h4 class="fw-bold mb-0 {% if full_phq >= 6 %}text-danger{% endif %}">{{ full_phq }} / 12
+                            </h4>
+                            <small class="text-muted">PHQ-4 Score</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <small class="text-uppercase text-muted fw-bold">Anxiety State</small>
+                            <h4 class="fw-bold mb-0 {% if score_gad >= 3 %}text-danger{% endif %}">{{ score_gad }} / 6
+                            </h4>
+                            <small class="text-muted">GAD-2 Score</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border h-100">
+                            <small class="text-uppercase text-muted fw-bold">Lifestyle Habits</small>
+                            <h4
+                                class="fw-bold mb-0 {% if wellness_score < 3 %}text-warning{% else %}text-success{% endif %}">
+                                {{ wellness_score }} / 6</h4>
+                            <small class="text-muted">Wellness Index</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if wellness_score < 4 %} <!-- Lifestyle Advice -->
+            <div
+                class="card border-0 shadow-sm rounded-4 mb-4 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-info-circle-fill text-warning fs-4 me-3"></i>
+                        <h5 class="fw-bold mb-0 text-dark">Lifestyle Improvement Opportunity</h5>
+                    </div>
+                    <p class="mb-0 text-muted">Your wellness index suggests there may be room for improvement in your
+                        physical activity or diet. Regular exercise and balanced nutrition are key pillars of both heart
+                        and mental health.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comparative Insights -->
+            <div class="card border-0 shadow rounded-4 mb-4 bg-primary text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-white bg-opacity-20 rounded-pill p-2 me-3">
+                            <i class="bi bi-graph-up fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">Statistical Comparison</h4>
+                    </div>
+                    <p class="mb-4">Based on the latest public health datasets (CDC/Census):</p>
+
+                    <div class="bg-white bg-opacity-10 rounded-4 p-4 border border-white border-opacity-25">
+                        <p class="mb-2">Approximately <span class="fs-2 fw-bold text-warning">{{ compare_val }}%</span>
+                            of
+                            {{ subgroup_label }}.</p>
+                        <div class="progress rounded-pill bg-white bg-opacity-20" style="height: 12px;">
+                            <div class="progress-bar bg-warning rounded-pill" style="width: {{ compare_val }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="small opacity-75 mb-0">* This screening is for informational purposes only. It is not
+                            a
+                            clinical diagnosis. If you are feeling overwhelmed, please reach out to local support
+                            services.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'predictions:assessment' %}" class="btn btn-outline-secondary rounded-pill px-4">Retake
+                    Assessment</a>
+                <a href="{% url 'predictions:trends' %}" class="btn btn-secondary rounded-pill px-4 text-white">Explore
+                    More
+                    Trends</a>
+            </div>
+    </div>
+</div>
+{% endblock %}

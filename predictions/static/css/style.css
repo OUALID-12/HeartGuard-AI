@@ -1,0 +1,100 @@
+:root {
+    --card-hover-transform: translateY(-5px);
+    --card-hover-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    --transition-base: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] {
+    --bs-body-bg: #121212;
+    --bs-body-color: #e0e0e0;
+    --bs-card-bg: #1e1e1e;
+    --bs-card-border-color: #333;
+}
+
+/* Global Transitions */
+body,
+.card,
+.navbar,
+.table {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card Enhancements */
+.card {
+    border: none;
+    transition: var(--transition-base);
+}
+
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow) !important;
+}
+
+/* Navbar Gradients */
+/* Light Mode (Original) */
+[data-bs-theme="light"] .navbar {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+}
+
+/* Dark Mode Gradient */
+[data-bs-theme="dark"] .navbar {
+    background: linear-gradient(135deg, #1a1c23 0%, #121212 100%) !important;
+    border-bottom: 1px solid #333;
+}
+
+/* Form Controls in Dark Mode */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #2b2b2b;
+    border-color: #444;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+    background-color: #2b2b2b;
+    border-color: #4e73df;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #252525;
+    border-color: #444;
+    color: #ccc;
+}
+
+/* Table overrides */
+[data-bs-theme="dark"] .table {
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .table-light {
+    background-color: #2b2b2b;
+    color: #fff;
+    --bs-table-bg: #2b2b2b;
+    border-color: #444;
+}
+
+/* Utility Animations */
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+[data-bs-theme="dark"] .text-gray-800 {
+    color: #e0e0e0 !important;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+[data-bs-theme="dark"] .text-gray-300 {
+    color: #666 !important;
+}

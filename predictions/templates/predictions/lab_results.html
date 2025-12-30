@@ -1,0 +1,131 @@
+{% extends 'predictions/base.html' %}
+
+{% block title %}Medical Lab Results - CardioAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="{% url 'predictions:home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'predictions:lab_upload' %}">Medical Lab</a></li>
+                    <li class="breadcrumb-item active">Analysis Results</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-1">Recommended Medicines</h1>
+            <p class="text-muted mb-0">System identified <span class="fw-bold text-primary">{{ results|length }}
+                    formulations</span> based on your description: <span class="fst-italic">"{{ query }}"</span></p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'predictions:lab_upload' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                <i class="fas fa-upload me-2"></i> Refine Search
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-primary text-white border-0">
+                    <tr>
+                        <th class="ps-4 py-4">Medicine Name</th>
+                        <th class="py-4">Category & Class</th>
+                        <th class="py-4">Indication</th>
+                        <th class="py-4">Manufacturer</th>
+                        <th class="py-4">Form & Strength</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    {% for item in results %}
+                    <tr class="transition-all hover-row">
+                        <td class="ps-4">
+                            <div class="fw-bold text-primary fs-5">{{ item.name }}</div>
+                            <div class="small">
+                                {% if item.classification == 'Prescription' %}
+                                <span
+                                    class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Rx
+                                    Only</span>
+                                {% else %}
+                                <span
+                                    class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">OTC</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">{{ item.category }}</div>
+                            <div class="small text-muted">{{ item.classification }}</div>
+                        </td>
+                        <td>
+                            <span
+                                class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-3 fw-bold p-2">
+                                <i class="fas fa-notes-medical me-1"></i> {{ item.indication }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="small fw-bold text-muted text-uppercase">{{ item.manufacturer }}</div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-pills text-secondary me-2"></i>
+                                <div>
+                                    <div class="fw-bold">{{ item.dosage_form }}</div>
+                                    <div class="small text-muted">{{ item.strength }}</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="p-5">
+                                <i class="fas fa-search fs-1 text-muted opacity-25 mb-3"></i>
+                                <p class="lead text-muted">No medicines matching your criteria were found.</p>
+                                <a href="{% url 'predictions:lab_upload' %}" class="btn btn-primary rounded-pill">Try
+                                    broad keywords</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <div
+                class="alert bg-dark text-white border-0 shadow-lg rounded-4 p-4 d-flex align-items-center overflow-hidden position-relative">
+                <i class="fas fa-exclamation-triangle fa-3x position-absolute opacity-10"
+                    style="right: -10px; top: -10px;"></i>
+                <div class="me-4 flex-shrink-0">
+                    <div class="bg-warning text-dark rounded-circle p-3 d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px;">
+                        <i class="fas fa-user-md fs-3"></i>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1 text-warning">Automated Clinical Decision Support Notice</h5>
+                    <p class="mb-0 small opacity-75 lh-base">
+                        These insights are generated by our high-performance matching algorithm analyzing symptom
+                        commonality across your medical database.
+                        <strong>This is not a definitive diagnosis.</strong> Suggested medications and protocols must be
+                        clinically validated against the patient's full medical history and drug allergies before use.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-row:hover {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+        transform: scale(0.998);
+    }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'predictions/base.html' %}
+
+{% block title %}Pending Registrations - HeartGuard AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-warning text-dark p-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center me-3"
+                        style="width: 50px; height: 50px;">
+                        <i class="fas fa-user-clock fs-3"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0">Pending Registrations</h3>
+                        <p class="mb-0 opacity-75">Review and approve new user accounts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4"
+                    role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if pending_users %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 40px;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                        </div>
+                                    </th>
+                                    <th scope="col">User</th>
+                                    <th scope="col">Details</th>
+                                    <th scope="col">Registered</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in pending_users %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input user-select" type="checkbox" name="selected"
+                                                value="{{ user.pk }}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-placeholder rounded-circle bg-light text-primary d-flex align-items-center justify-content-center me-3 fw-bold"
+                                                style="width: 40px; height: 40px;">
+                                                {{ user.username|first|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ user.username }}</div>
+                                                <div class="small text-muted">{{ user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            {% if user.profile.specialty %}
+                                            <div class="mb-1"><i class="fas fa-stethoscope me-1 text-muted"></i> {{
+                                                user.profile.specialty }}</div>
+                                            {% endif %}
+                                            {% if user.profile.city %}
+                                            <div><i class="fas fa-map-marker-alt me-1 text-muted"></i> {{
+                                                user.profile.city }}</div>
+                                            {% endif %}
+                                            {% if not user.profile.specialty and not user.profile.city %}
+                                            <span class="text-muted fst-italic">No additional info</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted" title="{{ user.date_joined }}">
+                                            {{ user.date_joined|date:"M d, Y" }}
+                                            <div class="text-xs">{{ user.date_joined|date:"H:i" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge bg-warning text-dark bg-opacity-25 border border-warning">Pending</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <button type="submit" name="action" value="reject"
+                            class="btn btn-outline-danger rounded-pill px-4">
+                            <i class="fas fa-times me-2"></i>Reject Selected
+                        </button>
+                        <button type="submit" name="action" value="approve"
+                            class="btn btn-success rounded-pill px-4 fw-bold">
+                            <i class="fas fa-check me-2"></i>Approve Selected
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="text-center py-5 invalid-feedback d-block">
+                    <div class="mb-3 text-muted opacity-50">
+                        <i class="fas fa-clipboard-check display-1"></i>
+                    </div>
+                    <h4 class="text-muted">No pending registrations</h4>
+                    <p class="text-muted small">All user accounts have been processed.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple script to handle "Select All" functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                const checkboxes = document.querySelectorAll('.user-select');
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            });
+        }
+    });
+</script>
+{% endblock %}

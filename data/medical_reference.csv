@@ -1,0 +1,101 @@
+Patient_ID,Age,Gender,Weight_kg,Height_cm,BMI,Chronic_Conditions,Drug_Allergies,Genetic_Disorders,Diagnosis,Symptoms,Recommended_Medication,Dosage,Duration,Treatment_Effectiveness,Adverse_Reactions,Recovery_Time_Days
+P0001,78,Other,88.7,196.3,21.1,None,Penicillin,Cystic Fibrosis,Inflammation,Fever,Amlodipine,None,30 days,Effective,Yes,18
+P0002,57,Female,90.5,195.6,30.2,Hypertension,None,Cystic Fibrosis,Depression,"Fatigue, Headache, Dizziness",Amoxicillin,5 mg,None,Neutral,No,24
+P0003,29,Female,87.0,168.2,27.0,None,Sulfa,None,Inflammation,"Joint Pain, Headache, Nausea",None,None,7 days,Effective,Yes,12
+P0004,56,Female,81.4,188.9,26.9,Hypertension,Penicillin,Cystic Fibrosis,Infection,Joint Pain,Ibuprofen,200 mg,7 days,Very Effective,No,22
+P0005,90,Male,64.2,157.0,33.3,None,Sulfa,Sickle Cell Anemia,Inflammation,"Fatigue, Fever, Headache",Amlodipine,500 mg,10 days,Ineffective,Yes,25
+P0006,75,Female,75.2,152.9,19.3,None,Penicillin,None,Arthritis,Cough,Amoxicillin,400 mg,None,Very Effective,Yes,16
+P0007,37,Female,101.5,151.1,28.7,Hypertension,None,Cystic Fibrosis,Inflammation,"Nausea, Fatigue",Amlodipine,200 mg,7 days,Effective,No,25
+P0008,43,Other,79.0,191.2,26.5,None,Penicillin,None,Hypertension,"Fatigue, Dizziness",Ibuprofen,None,10 days,Effective,No,13
+P0009,41,Other,87.1,177.9,29.5,Hypertension,Sulfa,Cystic Fibrosis,Arthritis,"Nausea, Fatigue",Amlodipine,None,10 days,Ineffective,No,19
+P0010,47,Female,50.9,199.1,26.7,None,Sulfa,Cystic Fibrosis,Infection,"Joint Pain, Dizziness, Fever",Ibuprofen,200 mg,7 days,Very Effective,Yes,29
+P0011,35,Female,119.1,165.5,22.8,Hypertension,Sulfa,Sickle Cell Anemia,Infection,"Cough, Joint Pain, Dizziness",None,400 mg,None,Ineffective,No,3
+P0012,88,Male,95.8,191.4,22.1,Hypertension,None,Cystic Fibrosis,Inflammation,"Joint Pain, Nausea",Amlodipine,None,7 days,Very Effective,No,30
+P0013,33,Male,54.6,180.6,19.9,None,Penicillin,Cystic Fibrosis,Arthritis,Joint Pain,Amlodipine,5 mg,7 days,Neutral,Yes,3
+P0014,86,Other,70.6,153.2,27.9,None,Penicillin,None,Infection,"Cough, Fever",None,200 mg,None,Very Effective,Yes,20
+P0015,86,Female,114.2,165.7,23.3,None,Sulfa,Sickle Cell Anemia,Infection,"Fever, Joint Pain, Dizziness",Ibuprofen,500 mg,30 days,Neutral,No,18
+P0016,30,Female,60.3,156.8,18.6,Asthma,Sulfa,Sickle Cell Anemia,Depression,"Fatigue, Dizziness",None,5 mg,10 days,Ineffective,No,4
+P0017,53,Other,85.4,164.3,25.9,Diabetes,None,Cystic Fibrosis,Depression,"Dizziness, Nausea",None,None,7 days,Effective,Yes,7
+P0018,31,Other,78.3,191.5,33.2,Hypertension,None,None,Depression,"Joint Pain, Cough",Amoxicillin,5 mg,10 days,Very Effective,Yes,30
+P0019,77,Other,83.2,188.4,23.2,Hypertension,Sulfa,Sickle Cell Anemia,Depression,Fever,Amlodipine,None,30 days,Ineffective,No,16
+P0020,36,Female,70.9,183.5,19.5,Diabetes,None,None,Inflammation,"Cough, Joint Pain",Amoxicillin,500 mg,10 days,Very Effective,No,25
+P0021,39,Female,119.1,191.0,23.1,Diabetes,Sulfa,None,Infection,"Fever, Fatigue",Amoxicillin,None,None,Very Effective,Yes,6
+P0022,65,Male,109.9,173.1,19.5,Hypertension,None,Cystic Fibrosis,Arthritis,Nausea,Ibuprofen,None,10 days,Neutral,Yes,3
+P0023,44,Female,79.0,154.4,26.1,Diabetes,Penicillin,Sickle Cell Anemia,Inflammation,"Headache, Dizziness",Ibuprofen,None,7 days,Neutral,No,30
+P0024,52,Female,81.9,159.5,31.6,Asthma,Penicillin,None,Inflammation,"Cough, Nausea",Amlodipine,None,None,Ineffective,No,17
+P0025,85,Female,57.1,170.6,34.7,Hypertension,Sulfa,Cystic Fibrosis,Depression,"Dizziness, Headache, Joint Pain",Amlodipine,500 mg,None,Ineffective,Yes,27
+P0026,57,Female,74.3,181.4,31.1,Diabetes,None,Cystic Fibrosis,Depression,Nausea,Amoxicillin,None,30 days,Effective,Yes,7
+P0027,54,Male,115.7,183.3,27.1,Hypertension,Penicillin,Sickle Cell Anemia,Inflammation,Cough,Amoxicillin,None,7 days,Very Effective,Yes,28
+P0028,20,Male,109.6,159.1,34.8,None,Sulfa,None,Hypertension,"Nausea, Headache",Amlodipine,500 mg,30 days,Effective,No,30
+P0029,30,Other,84.9,176.0,25.8,None,Penicillin,None,Hypertension,"Fatigue, Cough, Headache",Amoxicillin,500 mg,7 days,Very Effective,No,10
+P0030,19,Male,61.8,165.2,20.6,Asthma,Penicillin,None,Arthritis,"Fatigue, Joint Pain",None,None,None,Effective,Yes,10
+P0031,52,Female,54.0,175.1,23.2,Asthma,Sulfa,Cystic Fibrosis,Depression,"Joint Pain, Dizziness",Amoxicillin,None,30 days,Effective,No,9
+P0032,73,Female,65.2,177.8,27.0,Asthma,Penicillin,Cystic Fibrosis,Depression,"Joint Pain, Fatigue",Ibuprofen,5 mg,7 days,Effective,Yes,7
+P0033,79,Male,98.1,156.3,19.9,None,None,None,Infection,Headache,Ibuprofen,200 mg,10 days,Ineffective,No,24
+P0034,38,Other,110.0,163.6,26.1,Diabetes,None,Sickle Cell Anemia,Inflammation,Cough,None,5 mg,30 days,Neutral,No,16
+P0035,86,Other,73.6,176.3,21.9,Diabetes,Sulfa,Cystic Fibrosis,Arthritis,Dizziness,Ibuprofen,200 mg,7 days,Ineffective,Yes,16
+P0036,89,Other,66.8,196.9,25.3,Hypertension,Sulfa,Cystic Fibrosis,Depression,"Headache, Cough",Ibuprofen,400 mg,10 days,Ineffective,Yes,10
+P0037,61,Male,88.9,183.5,31.2,None,Penicillin,Sickle Cell Anemia,Arthritis,Dizziness,Ibuprofen,5 mg,30 days,Ineffective,No,20
+P0038,31,Female,84.7,175.2,26.7,Diabetes,None,Sickle Cell Anemia,Hypertension,"Headache, Nausea",None,None,7 days,Ineffective,No,12
+P0039,27,Other,102.1,183.2,26.2,Hypertension,Penicillin,Sickle Cell Anemia,Arthritis,"Joint Pain, Fatigue",Ibuprofen,200 mg,10 days,Neutral,No,20
+P0040,89,Other,117.0,150.0,28.5,None,Sulfa,Sickle Cell Anemia,Arthritis,"Nausea, Joint Pain",Amlodipine,5 mg,10 days,Neutral,Yes,27
+P0041,54,Female,63.0,184.1,25.5,Asthma,Penicillin,Cystic Fibrosis,Arthritis,"Fatigue, Dizziness, Nausea",Ibuprofen,500 mg,None,Very Effective,Yes,4
+P0042,22,Male,98.2,187.1,26.6,Hypertension,Penicillin,Sickle Cell Anemia,Infection,"Dizziness, Headache",Amlodipine,None,10 days,Ineffective,Yes,6
+P0043,76,Other,108.2,190.9,20.3,Diabetes,Penicillin,Sickle Cell Anemia,Hypertension,"Nausea, Dizziness",Ibuprofen,500 mg,10 days,Neutral,No,8
+P0044,44,Other,115.9,165.3,22.4,Hypertension,Penicillin,None,Infection,Joint Pain,Amoxicillin,200 mg,None,Ineffective,Yes,4
+P0045,63,Other,101.6,199.7,26.9,None,Sulfa,Cystic Fibrosis,Arthritis,Headache,Amlodipine,200 mg,30 days,Effective,No,14
+P0046,69,Male,72.4,171.6,32.7,Diabetes,None,Sickle Cell Anemia,Inflammation,Fever,None,5 mg,30 days,Very Effective,Yes,6
+P0047,76,Female,100.4,171.8,32.5,Hypertension,None,None,Infection,Dizziness,None,500 mg,10 days,Ineffective,No,13
+P0048,20,Male,108.8,187.0,34.0,Diabetes,None,None,Infection,"Nausea, Fever, Cough",Amoxicillin,500 mg,None,Neutral,No,14
+P0049,56,Male,82.7,173.6,34.1,None,Penicillin,None,Depression,"Nausea, Fatigue",Amoxicillin,400 mg,10 days,Effective,Yes,24
+P0050,61,Female,79.1,159.4,25.3,Diabetes,None,None,Inflammation,Nausea,Amoxicillin,None,None,Ineffective,No,11
+P0051,23,Female,59.2,194.5,24.9,Diabetes,Sulfa,None,Hypertension,Cough,Amlodipine,None,None,Neutral,Yes,29
+P0052,28,Male,58.6,150.9,26.7,Diabetes,Sulfa,Sickle Cell Anemia,Arthritis,Dizziness,None,400 mg,10 days,Effective,No,25
+P0053,41,Female,104.9,177.7,26.4,None,None,Cystic Fibrosis,Hypertension,Joint Pain,Amlodipine,500 mg,30 days,Very Effective,No,23
+P0054,77,Male,111.6,198.2,34.5,Diabetes,Penicillin,Cystic Fibrosis,Infection,"Dizziness, Fever",Amoxicillin,400 mg,7 days,Ineffective,No,19
+P0055,63,Female,64.0,151.1,22.2,None,Sulfa,None,Inflammation,"Fatigue, Nausea, Cough",Amlodipine,None,7 days,Effective,Yes,19
+P0056,41,Female,85.1,163.9,19.4,Diabetes,Sulfa,Cystic Fibrosis,Hypertension,Fatigue,Amoxicillin,500 mg,10 days,Effective,No,12
+P0057,25,Other,91.2,197.6,20.0,Asthma,Penicillin,Cystic Fibrosis,Arthritis,"Cough, Dizziness, Fever",None,200 mg,None,Ineffective,No,13
+P0058,55,Male,89.7,187.1,23.9,Hypertension,Sulfa,Sickle Cell Anemia,Inflammation,"Nausea, Fatigue",Amlodipine,None,10 days,Ineffective,Yes,26
+P0059,50,Female,100.7,165.9,18.6,Hypertension,Sulfa,Cystic Fibrosis,Inflammation,"Fever, Headache",Amlodipine,400 mg,7 days,Very Effective,Yes,26
+P0060,66,Male,108.7,178.5,22.0,None,Sulfa,Sickle Cell Anemia,Depression,Headache,Amlodipine,None,None,Effective,No,7
+P0061,79,Female,101.4,167.6,29.6,Hypertension,Penicillin,Cystic Fibrosis,Inflammation,"Headache, Dizziness, Fever",Amoxicillin,200 mg,7 days,Very Effective,No,18
+P0062,88,Other,106.9,180.4,18.8,Hypertension,Sulfa,Cystic Fibrosis,Hypertension,"Cough, Headache, Joint Pain",None,None,30 days,Very Effective,Yes,8
+P0063,75,Other,63.4,162.0,20.3,Asthma,Penicillin,None,Depression,Dizziness,Amlodipine,500 mg,30 days,Effective,Yes,19
+P0064,80,Other,98.8,184.5,21.1,Diabetes,Sulfa,None,Infection,"Cough, Nausea, Headache",None,400 mg,None,Effective,Yes,10
+P0065,63,Female,95.9,181.7,30.6,Diabetes,Sulfa,None,Infection,"Dizziness, Headache",None,5 mg,None,Neutral,Yes,28
+P0066,18,Female,91.2,153.4,23.8,Diabetes,Penicillin,Sickle Cell Anemia,Arthritis,Headache,None,400 mg,30 days,Very Effective,No,17
+P0067,21,Male,75.7,169.4,21.0,None,Sulfa,Sickle Cell Anemia,Hypertension,"Joint Pain, Fever, Nausea",Amlodipine,500 mg,30 days,Ineffective,Yes,24
+P0068,85,Other,116.3,176.2,23.7,Asthma,Penicillin,Cystic Fibrosis,Hypertension,"Dizziness, Cough, Joint Pain",Amlodipine,500 mg,10 days,Neutral,No,16
+P0069,88,Other,63.0,152.5,26.7,Asthma,Sulfa,Cystic Fibrosis,Depression,"Joint Pain, Fever, Fatigue",None,400 mg,7 days,Ineffective,No,30
+P0070,46,Other,77.9,170.3,20.6,Hypertension,None,Sickle Cell Anemia,Infection,"Fever, Nausea, Fatigue",Ibuprofen,5 mg,7 days,Ineffective,Yes,3
+P0071,19,Other,54.6,150.7,21.3,None,Sulfa,Sickle Cell Anemia,Arthritis,"Fatigue, Nausea",Ibuprofen,5 mg,7 days,Effective,No,3
+P0072,50,Other,73.2,187.2,28.1,Asthma,Sulfa,None,Inflammation,"Headache, Fever",None,5 mg,10 days,Very Effective,Yes,27
+P0073,64,Other,61.6,168.7,31.1,Diabetes,None,Cystic Fibrosis,Arthritis,"Fatigue, Headache, Joint Pain",Ibuprofen,500 mg,30 days,Neutral,No,10
+P0074,78,Male,82.8,177.5,34.6,None,Penicillin,Sickle Cell Anemia,Depression,"Joint Pain, Headache, Dizziness",Amlodipine,200 mg,7 days,Neutral,Yes,9
+P0075,56,Other,60.7,153.6,29.4,Hypertension,Sulfa,Sickle Cell Anemia,Infection,"Fever, Joint Pain, Nausea",None,None,7 days,Ineffective,No,11
+P0076,26,Female,79.4,168.0,23.7,Hypertension,Sulfa,None,Inflammation,"Nausea, Headache, Dizziness",Ibuprofen,None,None,Very Effective,No,5
+P0077,72,Female,82.8,155.3,18.8,Asthma,None,Sickle Cell Anemia,Infection,"Headache, Nausea, Fever",Ibuprofen,200 mg,10 days,Neutral,Yes,30
+P0078,67,Female,55.8,172.0,25.9,Asthma,None,None,Inflammation,"Nausea, Joint Pain, Fatigue",Ibuprofen,400 mg,10 days,Ineffective,No,19
+P0079,71,Other,59.3,169.6,28.1,Hypertension,Penicillin,None,Arthritis,Nausea,None,200 mg,None,Neutral,Yes,13
+P0080,26,Male,85.4,183.9,26.6,Diabetes,Penicillin,None,Arthritis,"Dizziness, Cough",Amoxicillin,400 mg,10 days,Ineffective,Yes,28
+P0081,86,Female,57.8,192.0,25.9,Asthma,Sulfa,None,Hypertension,"Fatigue, Dizziness",Amoxicillin,None,10 days,Ineffective,No,22
+P0082,53,Other,54.8,169.8,29.1,Hypertension,None,None,Arthritis,"Fever, Fatigue, Nausea",Amoxicillin,200 mg,10 days,Neutral,Yes,8
+P0083,29,Female,105.5,191.7,33.8,None,Penicillin,None,Depression,Fatigue,Ibuprofen,200 mg,10 days,Neutral,No,4
+P0084,32,Male,96.9,177.4,22.9,Diabetes,Sulfa,Cystic Fibrosis,Inflammation,Joint Pain,Amoxicillin,400 mg,7 days,Very Effective,No,16
+P0085,45,Other,86.4,162.4,23.6,None,None,Sickle Cell Anemia,Arthritis,Headache,Amoxicillin,500 mg,10 days,Effective,Yes,15
+P0086,24,Other,117.9,178.5,21.0,Diabetes,Sulfa,Cystic Fibrosis,Arthritis,Nausea,Ibuprofen,400 mg,7 days,Ineffective,Yes,27
+P0087,34,Other,101.1,189.1,31.6,None,Sulfa,Sickle Cell Anemia,Inflammation,"Fatigue, Headache, Dizziness",Amlodipine,None,7 days,Neutral,Yes,30
+P0088,73,Other,87.2,163.2,26.5,Diabetes,None,None,Infection,"Nausea, Cough",Amoxicillin,5 mg,30 days,Ineffective,Yes,8
+P0089,90,Female,86.2,158.7,32.3,Diabetes,Sulfa,Cystic Fibrosis,Arthritis,Joint Pain,Ibuprofen,200 mg,30 days,Very Effective,No,26
+P0090,84,Other,69.5,157.5,30.7,None,Penicillin,Cystic Fibrosis,Infection,"Fever, Dizziness",None,200 mg,None,Ineffective,No,10
+P0091,49,Male,102.4,170.7,28.1,Asthma,None,Sickle Cell Anemia,Arthritis,Joint Pain,Ibuprofen,200 mg,None,Neutral,Yes,17
+P0092,26,Female,107.3,198.5,31.4,Diabetes,Sulfa,Sickle Cell Anemia,Arthritis,"Nausea, Joint Pain, Cough",Amlodipine,200 mg,7 days,Effective,No,8
+P0093,62,Other,90.6,195.5,28.2,Diabetes,None,Sickle Cell Anemia,Infection,"Nausea, Joint Pain",None,None,10 days,Neutral,No,8
+P0094,76,Female,116.4,185.4,24.5,Asthma,Penicillin,Cystic Fibrosis,Infection,"Joint Pain, Headache",Ibuprofen,400 mg,None,Very Effective,Yes,13
+P0095,80,Male,66.8,185.0,30.3,Asthma,Penicillin,Cystic Fibrosis,Depression,"Cough, Headache",Ibuprofen,200 mg,10 days,Very Effective,No,25
+P0096,45,Male,52.0,172.1,28.9,Diabetes,None,Sickle Cell Anemia,Infection,"Fever, Joint Pain",None,500 mg,None,Neutral,No,16
+P0097,47,Other,66.4,196.4,24.1,Hypertension,None,Cystic Fibrosis,Hypertension,"Nausea, Cough",None,400 mg,7 days,Very Effective,No,4
+P0098,71,Female,98.1,195.0,21.3,None,Penicillin,None,Arthritis,"Nausea, Fatigue",Amlodipine,5 mg,None,Effective,Yes,7
+P0099,66,Male,57.9,197.3,32.5,Diabetes,Sulfa,Sickle Cell Anemia,Hypertension,Nausea,None,None,7 days,Ineffective,Yes,18
+P0100,35,Other,76.2,150.2,31.7,Asthma,Sulfa,Sickle Cell Anemia,Infection,"Fever, Fatigue",None,400 mg,30 days,Effective,No,16

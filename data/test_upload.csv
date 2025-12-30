@@ -1,0 +1,5 @@
+Patient_ID,Age,Gender,Symptoms
+U_TEST_01,45,Male,"Fever, Headache"
+U_TEST_02,30,Female,"Joint Pain, Nausea"
+U_TEST_03,60,Other,"Cough, Fever"
+U_TEST_04,25,Male,"Dizziness"

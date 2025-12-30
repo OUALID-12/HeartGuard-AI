@@ -1,0 +1,58 @@
+{% extends 'predictions/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 mb-4 text-center">
+            <div class="card-body p-4">
+                <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                    <i class="fas fa-user-circle fa-4x text-primary"></i>
+                </div>
+                <h3 class="fw-bold mb-1">Patient #{{ patient.id }}</h3>
+                <p class="text-muted">{{ patient.age }} years old, {{ patient.get_sex_display }}</p>
+                <hr>
+                <div class="row text-start mt-3 g-3">
+                    <div class="col-6">
+                        <small class="text-muted d-block uppercase font-weight-bold">BP</small>
+                        <span>{{ patient.resting_bp }} mmHg</span>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Cholesterol</small>
+                        <span>{{ patient.cholesterol }} mg/dl</span>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-muted d-block">Chest Pain Type</small>
+                        <span>{{ patient.get_chest_pain_type_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <h4 class="fw-bold mb-4">Assessment History</h4>
+        {% for pred in predictions %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body d-flex align-items-center justify-content-between p-4">
+                <div>
+                    <h5 class="mb-1 fw-bold">
+                        {% if pred.prediction_result == 1 %}
+                        <span class="text-danger">Heart Disease Detected</span>
+                        {% else %}
+                        <span class="text-success">No Disease Detected</span>
+                        {% endif %}
+                    </h5>
+                    <p class="text-muted mb-0">Predicted on {{ pred.predicted_at|date:"M d, Y H:i" }}</p>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-bold">{{ pred.probability|floatformat:4 }}</div>
+                    <small class="text-muted">Probability Score</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">No assessments found for this patient.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

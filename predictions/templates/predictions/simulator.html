@@ -1,0 +1,246 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block title %}Risk Simulator - CardioAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white p-5 text-center">
+                <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style="width: 80px; height: 80px;">
+                    <i class="fas fa-sliders-h fs-1"></i>
+                </div>
+                <h2 class="fw-bold mb-1">Risk Simulator (What-If Analysis)</h2>
+                <p class="mb-0 opacity-75">Adjust health variables to see how they impact your cardiovascular risk in
+                    real-time.</p>
+            </div>
+            <div class="card-body p-5">
+                <div class="row">
+                    <!-- Sliders Column -->
+                    <div class="col-lg-7">
+                        <div class="row g-4">
+                            <!-- Basic Demographics -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Age: <span id="val-age"
+                                        class="text-primary">45</span></label>
+                                <input type="range" class="form-range" id="age" min="1" max="120" value="45">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Sex: <span id="val-sex"
+                                        class="text-primary">Male</span></label>
+                                <select class="form-select rounded-pill" id="sex">
+                                    <option value="1">Male</option>
+                                    <option value="0">Female</option>
+                                </select>
+                            </div>
+
+                            <!-- Vitals -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Resting BP: <span id="val-resting_bp"
+                                        class="text-primary">120</span> mm Hg</label>
+                                <input type="range" class="form-range" id="resting_bp" min="50" max="250" value="120">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Cholesterol: <span id="val-cholesterol"
+                                        class="text-primary">200</span> mg/dl</label>
+                                <input type="range" class="form-range" id="cholesterol" min="100" max="600" value="200">
+                            </div>
+
+                            <!-- Clinical Features -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Chest Pain Type</label>
+                                <select class="form-select rounded-pill" id="chest_pain_type">
+                                    <option value="1">Typical Angina</option>
+                                    <option value="2">Atypical Angina</option>
+                                    <option value="3">Non-anginal Pain</option>
+                                    <option value="4" selected>Asymptomatic</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Max Heart Rate: <span id="val-max_heart_rate"
+                                        class="text-primary">150</span></label>
+                                <input type="range" class="form-range" id="max_heart_rate" min="60" max="220"
+                                    value="150">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">ST Depression (Oldpeak): <span id="val-oldpeak"
+                                        class="text-primary">1.0</span></label>
+                                <input type="range" class="form-range" id="oldpeak" min="0" max="6" step="0.1"
+                                    value="1.0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">ST Slope</label>
+                                <select class="form-select rounded-pill" id="st_slope">
+                                    <option value="1">Upsloping</option>
+                                    <option value="2" selected>Flat</option>
+                                    <option value="3">Downsloping</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Major Vessels (CA): <span id="val-ca"
+                                        class="text-primary">0</span></label>
+                                <input type="range" class="form-range" id="ca" min="0" max="3" value="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Thalassemia</label>
+                                <select class="form-select rounded-pill" id="thal">
+                                    <option value="3" selected>Normal</option>
+                                    <option value="6">Fixed Defect</option>
+                                    <option value="7">Reversable Defect</option>
+                                </select>
+                            </div>
+
+                            <!-- Switches/Binary -->
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="fasting_bs">
+                                    <label class="form-check-label fw-bold" for="fasting_bs">Fasting BS >
+                                        120mg/dl</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="exercise_angina">
+                                    <label class="form-check-label fw-bold" for="exercise_angina">Exercise Induced
+                                        Angina</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gauge Column -->
+                    <div class="col-lg-5 text-center d-flex flex-column justify-content-center border-start">
+                        <div class="p-4">
+                            <h4 class="fw-bold text-muted mb-4">Calculated Risk</h4>
+
+                            <div class="position-relative d-inline-block mb-4">
+                                <svg width="240" height="240" viewBox="0 0 100 100">
+                                    <!-- Background track -->
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#eee" stroke-width="8"
+                                        stroke-dasharray="283" stroke-linecap="round" />
+                                    <!-- Progress fill -->
+                                    <circle id="risk-gauge" cx="50" cy="50" r="45" fill="none"
+                                        stroke="var(--bs-primary)" stroke-width="8" stroke-dasharray="0 283"
+                                        stroke-linecap="round" transform="rotate(-90 50 50)"
+                                        style="transition: stroke-dasharray 0.5s ease, stroke 0.5s ease;" />
+                                    <!-- Percentage Text -->
+                                    <text x="50" y="55" text-anchor="middle" font-size="20" font-weight="bold"
+                                        id="risk-percent-text" fill="#333">0%</text>
+                                </svg>
+                            </div>
+
+                            <div id="risk-alert" class="alert alert-info rounded-4 border-0 shadow-sm py-3 mb-0">
+                                <div class="h5 fw-bold mb-1" id="risk-title">Normal</div>
+                                <p class="small mb-0" id="risk-desc">Based on these parameters, the risk of heart
+                                    disease is low.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputs = ['age', 'sex', 'chest_pain_type', 'resting_bp', 'cholesterol', 'fasting_bs', 'max_heart_rate', 'exercise_angina', 'oldpeak', 'st_slope', 'ca', 'thal'];
+    const gauge = document.getElementById('risk-gauge');
+    const percentText = document.getElementById('risk-percent-text');
+    const riskTitle = document.getElementById('risk-title');
+    const riskDesc = document.getElementById('risk-desc');
+    const riskAlert = document.getElementById('risk-alert');
+
+    function updateRisk() {
+        const data = {
+            age: parseInt(document.getElementById('age').value),
+            sex: parseInt(document.getElementById('sex').value),
+            chest_pain_type: parseInt(document.getElementById('chest_pain_type').value),
+            resting_bp: parseInt(document.getElementById('resting_bp').value),
+            cholesterol: parseInt(document.getElementById('cholesterol').value),
+            fasting_bs: document.getElementById('fasting_bs').checked ? 1 : 0,
+            resting_ecg: 0, // Default for simulator
+            max_heart_rate: parseInt(document.getElementById('max_heart_rate').value),
+            exercise_angina: document.getElementById('exercise_angina').checked ? 1 : 0,
+            oldpeak: parseFloat(document.getElementById('oldpeak').value),
+            st_slope: parseInt(document.getElementById('st_slope').value),
+            ca: parseInt(document.getElementById('ca').value),
+            thal: parseInt(document.getElementById('thal').value)
+        };
+
+        // Update Labels
+        document.getElementById('val-age').textContent = data.age;
+        document.getElementById('val-sex').textContent = data.sex === 1 ? 'Male' : 'Female';
+        document.getElementById('val-resting_bp').textContent = data.resting_bp;
+        document.getElementById('val-cholesterol').textContent = data.cholesterol;
+        document.getElementById('val-max_heart_rate').textContent = data.max_heart_rate;
+        document.getElementById('val-oldpeak').textContent = data.oldpeak;
+        document.getElementById('val-ca').textContent = data.ca;
+
+        fetch('{% url "predictions:api_simulate" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                const prob = result.probability * 100;
+                const dashArray = (prob / 100) * 283;
+                gauge.style.strokeDasharray = `${dashArray} 283`;
+                percentText.textContent = `${Math.round(prob)}%`;
+
+                // Update UI based on risk
+                if (prob > 70) {
+                    gauge.style.stroke = "var(--bs-danger)";
+                    riskAlert.className = "alert alert-danger rounded-4 border-0 shadow-sm py-3 mb-0";
+                    riskTitle.textContent = "High Risk";
+                    riskDesc.textContent = "Urgent lifestyle intervention or medical consultation recommended.";
+                } else if (prob > 40) {
+                    gauge.style.stroke = "var(--bs-warning)";
+                    riskAlert.className = "alert alert-warning rounded-4 border-0 shadow-sm py-3 mb-0";
+                    riskTitle.textContent = "Moderate Risk";
+                    riskDesc.textContent = "Consider improving your vital metrics through diet and exercise.";
+                } else {
+                    gauge.style.stroke = "var(--bs-success)";
+                    riskAlert.className = "alert alert-success rounded-4 border-0 shadow-sm py-3 mb-0";
+                    riskTitle.textContent = "Low Risk";
+                    riskDesc.textContent = "Your health parameters are within safe ranges.";
+                }
+            });
+    }
+
+    // Attach listeners
+    [...inputs, 'resting_ecg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updateRisk);
+            el.addEventListener('change', updateRisk);
+        }
+    });
+
+    // Initial run
+    updateRisk();
+</script>
+
+<style>
+    .form-range::-webkit-slider-thumb {
+        background: var(--bs-primary);
+    }
+
+    .form-range::-moz-range-thumb {
+        background: var(--bs-primary);
+    }
+
+    .form-select:focus,
+    .form-range:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+</style>
+{% endblock %}
