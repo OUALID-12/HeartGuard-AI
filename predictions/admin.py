@@ -127,13 +127,28 @@ admin.site.register(Assessment)
 admin.site.register(LabSearch)
 
 # Allow admin management of push subscriptions
-from .models import PushSubscription
+from .models import PushSubscription, GymRecommendation
+
+@admin.register(GymRecommendation)
+class GymRecommendationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'patient', 'recommended_workout', 'confidence', 'created_at')
+    search_fields = ('user__username', 'recommended_workout')
+    list_filter = ('recommended_workout', 'created_at')
 
 @admin.register(PushSubscription)
 class PushSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'created_at')
     readonly_fields = ('endpoint', 'keys', 'created_at')
     search_fields = ('user__username', 'endpoint')
+
+
+from .models import BodyFatPrediction
+
+@admin.register(BodyFatPrediction)
+class BodyFatPredictionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'predicted_percent', 'uncertainty', 'created_at')
+    readonly_fields = ('created_at',)
+    search_fields = ('user__username',)
 
 # Make the admin interface minimal: show only a link to Pending Registrations from the admin index.
 # We keep the registrations as-is but replace the index template to a minimal one that only exposes the pending registrations feature.

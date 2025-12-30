@@ -9,7 +9,7 @@ from django.conf import settings
 import json
 import requests
 from .forms import PatientDataForm, UserUpdateForm
-from .models import Patient, Prediction, Assessment, LabSearch, Alert
+from .models import Patient, Prediction, Assessment, LabSearch, Alert, GymRecommendation
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -402,6 +402,61 @@ def recommend_view(request):
             'BMI': request.POST.get('bmi')
         }
 
+
+@login_required
+def bodyfat_view(request):
+    """Estimate percent body fat from body measurements."""
+    result = None
+    if request.method == 'POST':
+        # Collect inputs with the same names as CSV headers where possible
+        inputs = {
+            'Age': request.POST.get('Age'),
+            'Weight': request.POST.get('Weight'),
+            'Height': request.POST.get('Height'),
+            'Neck': request.POST.get('Neck'),
+            'Chest': request.POST.get('Chest'),
+            'Abdomen': request.POST.get('Abdomen'),
+            'Hip': request.POST.get('Hip'),
+            'Thigh': request.POST.get('Thigh'),
+            'Knee': request.POST.get('Knee'),
+            'Ankle': request.POST.get('Ankle'),
+            'Biceps': request.POST.get('Biceps'),
+            'Forearm': request.POST.get('Forearm'),
+            'Wrist': request.POST.get('Wrist')
+        }
+
+        # Cast numeric fields
+        for k, v in list(inputs.items()):
+            try:
+                if v is None or v == '':
+                    inputs[k] = None
+                else:
+                    inputs[k] = float(v)
+            except Exception:
+                inputs[k] = None
+
+        from ml_model.predict_bodyfat import BodyFatPredictor
+        bf = BodyFatPredictor()
+        try:
+            pred = bf.predict(inputs)
+            if pred:
+                result = pred
+                # Save to DB
+                try:
+                    BodyFatPrediction.objects.create(
+                        user=request.user,
+                        patient=None,
+                        predicted_percent=float(pred.get('bodyfat_percent')),
+                        uncertainty=pred.get('uncertainty'),
+                        inputs=inputs
+                    )
+                except Exception as e:
+                    print(f"Failed to save BodyFatPrediction: {e}")
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f"Error during body fat prediction: {e}")
+
+    return render(request, 'predictions/bodyfat.html', {'result': result})
         # Cast numeric fields where possible
         for k, v in list(inputs.items()):
             try:
@@ -415,16 +470,109 @@ def recommend_view(request):
                 inputs[k] = None
 
         try:
-            res = recommender.recommend(inputs, top_k=1)
+            top_k = 1
+            try:
+                top_k = int(request.POST.get('top_k', '1'))
+            except Exception:
+                top_k = 1
+
+            res = recommender.recommend(inputs, top_k=top_k)
             if res:
-                label, prob = res[0]
-                result = {'label': label, 'probability': round(prob, 4)}
+                # Build result representation for template (list of dicts)
+                result = [{'label': label, 'probability': round(prob, 4)} for (label, prob) in res]
+                # Save top-1 recommendation to DB and record all in inputs
+                try:
+                    top_label, top_prob = res[0]
+                    saved_inputs = {'features': inputs, 'recommendations': [{'label': l, 'probability': p} for l, p in res]}
+                    GymRecommendation.objects.create(
+                        user=request.user,
+                        patient=None,
+                        recommended_workout=top_label,
+                        confidence=float(top_prob),
+                        inputs=saved_inputs
+                    )
+                except Exception as e:
+                    print(f"Failed to save GymRecommendation: {e}")
         except Exception as e:
             messages.error(request, f'Error during recommendation: {e}')
 
     return render(request, 'predictions/recommend.html', {
         'result': result
     })
+
+
+@require_POST
+@login_required
+def recommend_json(request):
+    """API endpoint that returns a JSON list of recommendations given JSON input."""
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'detail': 'Invalid JSON'}, status=400)
+
+    features = payload.get('features', {}) if isinstance(payload, dict) else {}
+    top_k = payload.get('top_k', 1)
+    try:
+        top_k = int(top_k)
+    except Exception:
+        top_k = 1
+
+    # Cast numeric fields similarly to form-based endpoint
+    for k, v in list(features.items()):
+        try:
+            if v is None or v == '':
+                features[k] = None
+            else:
+                if isinstance(v, (int, float)):
+                    continue
+                # try numeric cast
+                try:
+                    features[k] = float(v)
+                except Exception:
+                    features[k] = v
+        except Exception:
+            features[k] = None
+
+    try:
+        recs = recommender.recommend(features, top_k=top_k)
+        return JsonResponse({'success': True, 'recommendations': [{'label': l, 'probability': p} for l, p in recs]})
+    except Exception as e:
+        return JsonResponse({'success': False, 'detail': str(e)}, status=500)
+
+
+@require_POST
+@login_required
+def bodyfat_json(request):
+    """API endpoint that returns predicted body fat percentage for given features."""
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'detail': 'Invalid JSON'}, status=400)
+
+    features = payload.get('features', {}) if isinstance(payload, dict) else {}
+
+    # Cast numeric fields
+    for k, v in list(features.items()):
+        try:
+            if v is None or v == '':
+                features[k] = None
+            else:
+                if isinstance(v, (int, float)):
+                    continue
+                try:
+                    features[k] = float(v)
+                except Exception:
+                    features[k] = v
+        except Exception:
+            features[k] = None
+
+    from ml_model.predict_bodyfat import BodyFatPredictor
+    bf = BodyFatPredictor()
+    try:
+        out = bf.predict(features)
+        return JsonResponse({'success': True, 'prediction': out})
+    except Exception as e:
+        return JsonResponse({'success': False, 'detail': str(e)}, status=500)
 
 @login_required
 def history_view(request):
@@ -528,6 +676,34 @@ def history_view(request):
                 })
             except Exception as e:
                 print(f"Error building timeline entry for lab search {getattr(l, 'id', 'unknown')}: {e}")
+                continue
+
+        # Include gym recommendations in timeline
+        gym_recs = GymRecommendation.objects.filter(user=request.user).order_by('-created_at')
+        if selected_patient != 'All':
+            gym_recs = gym_recs.filter(patient__patient_name=selected_patient)
+
+        for r in gym_recs:
+            try:
+                recs = None
+                try:
+                    recs = getattr(r, 'inputs', {}) or {}
+                    recs = recs.get('recommendations') if isinstance(recs, dict) else None
+                except Exception:
+                    recs = None
+
+                timeline.append({
+                    'type': 'recommend',
+                    'date': getattr(r, 'created_at', None),
+                    'title': 'Workout Recommendation',
+                    'result': getattr(r, 'recommended_workout', 'Unknown'),
+                    'probability': f"{getattr(r, 'confidence', 0.0)*100:.1f}%",
+                    'obj': r,
+                    'recommendations': recs,
+                    'name': getattr(r.patient, 'patient_name', None) if getattr(r, 'patient', None) else 'You'
+                })
+            except Exception as e:
+                print(f"Error building timeline entry for gym recommendation {getattr(r, 'id', 'unknown')}: {e}")
                 continue
 
         # Sort timeline by date descending; guard missing dates

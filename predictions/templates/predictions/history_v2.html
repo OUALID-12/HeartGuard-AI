@@ -126,6 +126,23 @@
                                         <div class="fw-bold">{% if entry.name %}{{ entry.name }}{% else %}Unknown{% endif %}</div>
                                         <div class="small text-muted">{% if entry.dob %}Born {{ entry.dob|date:"F d, Y" }}{% endif %}</div>
                                     </div>
+                                    {% elif entry.type == 'recommend' %}
+                                    <div class="col-md-12">
+                                        <div class="small text-muted text-uppercase fw-bold">Recommendations</div>
+                                        {% if entry.recommendations %}
+                                        <ul class="mb-0">
+                                            {% for r in entry.recommendations %}
+                                                <li><strong>{{ r.label }}</strong> — {{ r.probability|floatformat:2 }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                        <div class="fw-bold">{{ entry.result }} <small class="text-muted">({{ entry.probability }})</small></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4 mt-3">
+                                        <div class="small text-muted text-uppercase fw-bold">For</div>
+                                        <div class="fw-bold">{{ entry.name }}</div>
+                                    </div>
                                     {% elif entry.type == 'assessment' %}
                                     <div class="col-md-4">
                                         <div class="small text-muted text-uppercase fw-bold">Mental Scores</div>

@@ -32,6 +32,13 @@
       <label class="form-label">Session Duration (hrs)</label>
       <input name="duration" type="number" step="0.01" class="form-control">
     </div>
+    <div class="col-md-2">
+      <label class="form-label">Top suggestions</label>
+      <select name="top_k" class="form-select">
+        <option value="1">Top 1</option>
+        <option value="3">Top 3</option>
+      </select>
+    </div>
     <div class="col-12">
       <button class="btn btn-primary">Get Recommendation</button>
     </div>
@@ -39,8 +46,12 @@
 
   {% if result %}
     <hr/>
-    <h4>Recommended Workout: <strong>{{ result.label }}</strong></h4>
-    <p>Confidence: {{ result.probability|floatformat:2 }}</p>
+    <h4>Recommendations</h4>
+    <ul>
+      {% for r in result %}
+        <li><strong>{{ r.label }}</strong> — Confidence: {{ r.probability|floatformat:2 }}</li>
+      {% endfor %}
+    </ul>
   {% endif %}
 </div>
 {% endblock %}
