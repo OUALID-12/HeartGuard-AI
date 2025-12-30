@@ -9,19 +9,21 @@ from django.conf import settings
 import json
 import requests
 from .forms import PatientDataForm, UserUpdateForm
-from .models import Patient, Prediction, Assessment, LabSearch
+from .models import Patient, Prediction, Assessment, LabSearch, Alert
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 
 from ml_model.predict import HeartDiseasePredictor
+from ml_model.predict_gym import GymRecommender
 import os
 import io
 from .utils import generate_medical_pdf
 import pandas as pd
 import PyPDF2
 
-# Initialize predictor
+# Initialize predictors
 predictor = HeartDiseasePredictor()
+recommender = GymRecommender()
 
 from django.db.models import Avg, Count
 
@@ -59,6 +61,89 @@ def home(request):
         for p in recent_qs:
             p.probability_display = f"{p.probability:.2f}"
             recent_predictions.append(p)
+            
+        # --- Gamification Logic ---
+        # Calculate Heart Health Score
+        # Assessments: 10 pts, Predictions: 5 pts, Lab Searches: 2 pts
+        assessment_count = Assessment.objects.filter(user=request.user).count()
+        lab_search_count = LabSearch.objects.filter(user=request.user).count()
+        
+        health_score_raw = (assessment_count * 15) + (total_predictions * 10) + (lab_search_count * 5)
+        
+        # --- Bonus Points for Healthy Vitals ---
+        # +20 pts for each "No Disease" detected
+        healthy_predictions = user_preds.filter(prediction_result=0).count()
+        health_score_raw += (healthy_predictions * 20)
+        
+        # +5 pts for Healthy BP (approx < 120) and +5 for Healthy Cholesterol (< 200)
+        # We iterate to check value-based bonuses
+        for p in patient_qs:
+            # Resting BP (trestbps). Normal is < 120.
+            if p.resting_bp and p.resting_bp < 120:
+                health_score_raw += 5
+            # Serum Cholesterol (chol). Normal is < 200.
+            if p.cholesterol and p.cholesterol < 200:
+                health_score_raw += 5
+        # Cap logic or levels could avail here
+        health_score = min(health_score_raw, 10000) # Cap for now
+        
+        # Determine Level (Every 100 points)
+        user_level = (health_score // 100) + 1
+        
+        # Calculate progress to next level
+        current_level_base = (user_level - 1) * 100
+        level_progress = health_score - current_level_base
+        
+
+        # --- Smart Alerts Logic ---
+        from .models import Alert
+        from django.utils import timezone
+        import datetime
+        
+        # 1. Critical Trend Detection: 3 consecutive positive predictions
+        last_3_predictions = user_preds.order_by('-predicted_at')[:3]
+        if len(last_3_predictions) == 3:
+            if all(p.prediction_result == 1 for p in last_3_predictions):
+                # Check if we already alerted recently (e.g., today)
+                today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                if not Alert.objects.filter(user=request.user, alert_type='TREND', created_at__gte=today_start).exists():
+                    Alert.objects.create(
+                        user=request.user,
+                        alert_type='TREND',
+                        message="Critical Trend Detected: Your last 3 automated screenings indicated potential risk. Please consult a specialist immediately.",
+                        is_sent_via_email=True  # Simulating email dispatch
+                    )
+
+        # 2. Check-up Reminder: Last assessment > 30 days
+        last_assessment = Assessment.objects.filter(user=request.user).order_by('-taken_at').first()
+        if last_assessment:
+            days_since = (timezone.now() - last_assessment.taken_at).days
+            if days_since > 30:
+                 # Check if alerted recently
+                 recent_reminder = Alert.objects.filter(user=request.user, alert_type='CHECKUP', created_at__gte=timezone.now() - datetime.timedelta(days=7)).exists()
+                 if not recent_reminder:
+                    Alert.objects.create(
+                        user=request.user,
+                        alert_type='CHECKUP',
+                        message=f"It has been {days_since} days since your last wellness check. Schedule a follow-up assessment.",
+                        is_sent_via_email=True
+                    )
+        
+        # Fetch unread alerts for display
+        alerts = Alert.objects.filter(user=request.user, is_read=False).order_by('-created_at')
+
+        metrics = {
+            'total_predictions': total_predictions,
+            'total_patients': total_patients,
+            'avg_age': avg_age,
+            'prevalence': prevalence,
+            'health_score': health_score,
+            'user_level': user_level,
+            'level_progress': level_progress,
+        }
+        
+        # Alerts will be attached to the context below (avoid referencing `context` before it's defined)
+
     else:
         # Global metrics for anonymous visitors
         total_patients = Patient.objects.count()
@@ -87,6 +172,9 @@ def home(request):
             p.probability_display = f"{p.probability:.2f}"
             recent_predictions.append(p)
 
+        # Site-wide unread alerts for anonymous visitors
+        alerts = Alert.objects.filter(is_read=False).order_by('-created_at')
+
     context = {
         'metrics': {
             'total_patients': total_patients,
@@ -99,7 +187,8 @@ def home(request):
             'gender': json.dumps({'labels': gender_labels, 'values': gender_values}),
             'age_dist': json.dumps({'labels': list(age_groups.keys()), 'values': list(age_groups.values())}),
         },
-        'recent_activity': recent_predictions
+        'recent_activity': recent_predictions,
+        'alerts': alerts
     }
     return render(request, 'predictions/home.html', context)
 
@@ -135,6 +224,112 @@ def register_view(request):
         if hasattr(field.widget, 'attrs'):
             field.widget.attrs['class'] = 'form-control'
     return render(request, 'predictions/register.html', {'form': form})
+
+
+# Simple offline fallback page for PWA service worker
+def offline(request):
+    """Render a simple offline fallback page reachable at /offline.html"""
+    return render(request, 'predictions/offline.html')
+
+
+# Expose service worker script at site root to allow registration at '/service-worker.js'
+from django.views.decorators.cache import never_cache
+from django.http import HttpResponse
+
+@never_cache
+def service_worker(request):
+    sw_path = os.path.join(settings.BASE_DIR, 'static', 'service-worker.js')
+    try:
+        with open(sw_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='application/javascript')
+    except Exception as e:
+        return HttpResponse('// service worker not found', content_type='application/javascript', status=404)
+
+
+# ---- Push subscription endpoints ----
+import json
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
+from django.shortcuts import get_object_or_404
+from .models import PushSubscription
+from .utils import send_push
+from django.contrib.admin.views.decorators import staff_member_required
+
+@require_GET
+def push_public_key(request):
+    """Return the VAPID public key for the client to use when subscribing."""
+    from django.conf import settings
+    public_key = getattr(settings, 'VAPID_PUBLIC_KEY', '')
+    return JsonResponse({'publicKey': public_key})
+
+@require_POST
+@login_required
+def push_subscribe(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'detail': 'Invalid JSON'}, status=400)
+
+    endpoint = payload.get('endpoint')
+    keys = payload.get('keys')
+
+    if not endpoint:
+        return JsonResponse({'success': False, 'detail': 'Missing endpoint'}, status=400)
+
+    sub, created = PushSubscription.objects.get_or_create(endpoint=endpoint, defaults={'user': request.user, 'keys': keys})
+    if not created:
+        # Update user association/keys if needed
+        sub.user = request.user
+        sub.keys = keys or sub.keys
+        sub.save()
+
+    return JsonResponse({'success': True, 'created': created})
+
+@require_POST
+@login_required
+def push_unsubscribe(request):
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'detail': 'Invalid JSON'}, status=400)
+    endpoint = payload.get('endpoint')
+    if not endpoint:
+        return JsonResponse({'success': False, 'detail': 'Missing endpoint'}, status=400)
+    try:
+        ps = PushSubscription.objects.get(endpoint=endpoint, user=request.user)
+        ps.delete()
+        return JsonResponse({'success': True})
+    except PushSubscription.DoesNotExist:
+        return JsonResponse({'success': False, 'detail': 'Subscription not found'}, status=404)
+
+@require_POST
+@staff_member_required
+def push_send_test(request):
+    """Send a test push to all subscriptions or the ones for a user if 'username' provided in body."""
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        payload = {}
+    username = payload.get('username')
+    message = payload.get('message', 'Test notification from HeartGuard AI')
+
+    subs = PushSubscription.objects.all()
+    if username:
+        subs = subs.filter(user__username=username)
+
+    results = []
+    for s in subs:
+        sub_info = {
+            'endpoint': s.endpoint,
+            'keys': s.keys or {}
+        }
+        res = send_push(sub_info, {'title': 'HeartGuard AI', 'body': message})
+        results.append({'id': s.id, 'user': getattr(s.user, 'username', None), 'result': res})
+
+    return JsonResponse({'sent': len(results), 'results': results})
 
 @login_required
 def predict_view(request):
@@ -182,6 +377,54 @@ def predict_view(request):
         form = PatientDataForm()
     
     return render(request, 'predictions/predict.html', {'form': form})
+
+
+@login_required
+def recommend_view(request):
+    """Recommend a workout type based on simple fitness inputs."""
+    result = None
+    if request.method == 'POST':
+        # Collect input values from POST form
+        inputs = {
+            'Age': request.POST.get('age'),
+            'Gender': request.POST.get('gender'),
+            'Weight (kg)': request.POST.get('weight'),
+            'Height (m)': request.POST.get('height'),
+            'Max_BPM': request.POST.get('max_bpm'),
+            'Avg_BPM': request.POST.get('avg_bpm'),
+            'Resting_BPM': request.POST.get('resting_bpm'),
+            'Session_Duration (hours)': request.POST.get('duration'),
+            'Calories_Burned': request.POST.get('calories'),
+            'Fat_Percentage': request.POST.get('fat_percentage'),
+            'Water_Intake (liters)': request.POST.get('water'),
+            'Workout_Frequency (days/week)': request.POST.get('frequency'),
+            'Experience_Level': request.POST.get('experience'),
+            'BMI': request.POST.get('bmi')
+        }
+
+        # Cast numeric fields where possible
+        for k, v in list(inputs.items()):
+            try:
+                if v is None or v == '':
+                    inputs[k] = None
+                else:
+                    # cast floats
+                    if k in ['Age', 'Weight (kg)', 'Height (m)', 'Max_BPM', 'Avg_BPM', 'Resting_BPM', 'Session_Duration (hours)', 'Calories_Burned', 'Fat_Percentage', 'Water_Intake (liters)', 'Workout_Frequency (days/week)', 'Experience_Level', 'BMI']:
+                        inputs[k] = float(v)
+            except Exception:
+                inputs[k] = None
+
+        try:
+            res = recommender.recommend(inputs, top_k=1)
+            if res:
+                label, prob = res[0]
+                result = {'label': label, 'probability': round(prob, 4)}
+        except Exception as e:
+            messages.error(request, f'Error during recommendation: {e}')
+
+    return render(request, 'predictions/recommend.html', {
+        'result': result
+    })
 
 @login_required
 def history_view(request):
@@ -587,16 +830,18 @@ def profile_update(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
         
+    from .models import PushSubscription
+    push_subscriptions = PushSubscription.objects.filter(user=request.user).order_by('-created_at')
+
     context = {
-        'u_form': u_form
+        'u_form': u_form,
+        'push_subscriptions': push_subscriptions
     }
     return render(request, 'predictions/profile_update.html', context)
 
 @login_required
 def roadmap_view(request):
-    # Roadmap feature has been intentionally removed per project decision.
-    # Returning 410 GONE to indicate the endpoint is no longer available.
-    return HttpResponse('Roadmap has been removed', status=410)
+    return render(request, 'predictions/roadmap.html')
 @login_required
 def simulator_view(request):
     return render(request, 'predictions/simulator.html')

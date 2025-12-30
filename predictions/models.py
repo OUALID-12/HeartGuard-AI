@@ -168,3 +168,33 @@ class LabSearch(models.Model):
 
     def __str__(self):
         return f"Search by {self.user.username}: {self.query[:30]}"
+
+class Alert(models.Model):
+    ALERT_TYPES = [
+        ('TREND', 'Critical Trend'),
+        ('CHECKUP', 'Check-up Reminder'),
+        ('MEDICATION', 'Medication Reminder'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='alerts')
+    alert_type = models.CharField(max_length=20, choices=ALERT_TYPES)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    is_sent_via_email = models.BooleanField(default=False)
+    is_sent_via_sms = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_alert_type_display()} for {self.user.username}"
+
+
+class PushSubscription(models.Model):
+    """Stores a browser push subscription for a user."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='push_subscriptions')
+    endpoint = models.TextField(unique=True)
+    keys = models.JSONField(blank=True, null=True, help_text='p256dh and auth keys')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        owner = self.user.username if self.user else 'anonymous'
+        return f"PushSubscription for {owner} ({self.endpoint[:50]}...)"

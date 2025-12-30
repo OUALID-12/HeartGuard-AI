@@ -1,0 +1,46 @@
+{% extends 'predictions/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Workout Recommendation</h2>
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    <div class="col-md-2">
+      <label class="form-label">Age</label>
+      <input name="age" type="number" class="form-control" placeholder="e.g. 30">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Gender</label>
+      <select name="gender" class="form-select">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Weight (kg)</label>
+      <input name="weight" type="number" step="0.1" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Height (m)</label>
+      <input name="height" type="number" step="0.01" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Avg BPM</label>
+      <input name="avg_bpm" type="number" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Session Duration (hrs)</label>
+      <input name="duration" type="number" step="0.01" class="form-control">
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">Get Recommendation</button>
+    </div>
+  </form>
+
+  {% if result %}
+    <hr/>
+    <h4>Recommended Workout: <strong>{{ result.label }}</strong></h4>
+    <p>Confidence: {{ result.probability|floatformat:2 }}</p>
+  {% endif %}
+</div>
+{% endblock %}

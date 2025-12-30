@@ -54,8 +54,69 @@
                         </a>
                     </div>
                 </form>
+
+                <!-- Push Subscriptions Management -->
+                <hr class="my-5">
+                <h4 class="fw-bold mb-3">Push Notifications</h4>
+                <p class="text-muted small mb-3">Manage your device subscriptions for push notifications.</p>
+                <div id="push-subscriptions-list">
+                    {% if push_subscriptions %}
+                    <ul class="list-group mb-3">
+                        {% for s in push_subscriptions %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" data-endpoint="{{ s.endpoint }}">
+                            <div class="small text-truncate" style="max-width:70%">{{ s.endpoint }}</div>
+                            <div class="text-muted small me-3">{{ s.created_at|date:"M d, Y H:i" }}</div>
+                            <button class="btn btn-sm btn-outline-danger btn-unsubscribe">Unsubscribe</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">You have no registered push subscriptions.</p>
+                    {% endif %}
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Handle unsubscribe buttons
+    document.addEventListener('DOMContentLoaded', function () {
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        document.querySelectorAll('.btn-unsubscribe').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const li = this.closest('li');
+                const endpoint = li.dataset.endpoint;
+                if (!confirm('Unsubscribe this device from push notifications?')) return;
+                try {
+                    const resp = await fetch('/api/push/unsubscribe/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ endpoint })
+                    });
+                    const data = await resp.json();
+                    if (resp.ok && data.success) {
+                        li.remove();
+                        alert('Unsubscribed successfully.');
+                    } else {
+                        alert('Failed to unsubscribe: ' + (data.detail || resp.statusText));
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Error unsubscribing. See console for details.');
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

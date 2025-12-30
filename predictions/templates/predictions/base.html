@@ -21,6 +21,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <!-- PWA manifest & mobile meta -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192.svg' %}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -108,6 +115,10 @@
                             href="{% url 'predictions:predict' %}">Predict</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match and request.resolver_match.url_name == 'recommend' %}active{% endif %}"
+                            href="{% url 'predictions:recommend' %}">Recommendations</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match and request.resolver_match.url_name == 'assessment' %}active{% endif %}"
                             href="{% url 'predictions:assessment' %}">Wellness</a>
                     </li>
@@ -122,6 +133,10 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match and request.resolver_match.url_name == 'trends' %}active{% endif %}"
                             href="{% url 'predictions:trends' %}">Trends</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match and request.resolver_match.url_name == 'roadmap' %}active{% endif %}"
+                            href="{% url 'predictions:roadmap' %}">Roadmap</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -259,6 +274,132 @@
             });
         });
     </script>
+
+    <!-- Service Worker registration + Add to Home Screen prompt handling -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => {
+                        console.log('Service worker registered:', reg);
+                        if (reg.waiting) {
+                            // You may prompt the user to update
+                            console.log('SW waiting to activate');
+                        }
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // new content available
+                                    console.log('New service worker installed.');
+                                }
+                            });
+                        });
+                    }).catch(err => console.error('SW registration failed:', err));
+            });
+        }
+
+        // Add to Home Screen prompt handling (simple icon)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // show simple install button
+            const btn = document.createElement('button');
+            btn.id = 'pwaInstallBtn';
+            btn.className = 'btn btn-primary p-2 position-fixed';
+            btn.style = 'right:20px; bottom:20px; z-index:9999; border-radius: 50%;';
+            btn.innerHTML = '<i class="fas fa-download"></i>';
+            btn.title = 'Install App';
+            btn.addEventListener('click', async () => {
+                btn.style.display = 'none';
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                });
+            });
+            document.body.appendChild(btn);
+        });
+
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'none';
+            console.log('PWA was installed');
+        });
+
+        // Push subscription UI: show a small notifications button for logged-in users
+        (function () {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            async function enablePush() {
+                try {
+                    // Get VAPID public key
+                    const pkResp = await fetch('/api/push/public-key/');
+                    const pkJson = await pkResp.json();
+                    const vapidPublicKey = pkJson.publicKey;
+
+                    const registration = await navigator.serviceWorker.ready;
+                    const sub = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+                    });
+
+                    // Send subscription to server
+                    await fetch('/api/push/subscribe/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify(sub.toJSON())
+                    });
+
+                    alert('Push notifications enabled — you will receive test notifications.');
+                } catch (err) {
+                    console.error('Failed to enable push:', err);
+                    alert('Unable to enable push notifications. Check console for details.');
+                }
+            }
+
+            function urlBase64ToUint8Array(base64String) {
+                const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+                const rawData = atob(base64);
+                const outputArray = new Uint8Array(rawData.length);
+                for (let i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+            }
+
+            // Only show the button if user is authenticated (server template provides a flag)
+            if ({{ user.is_authenticated|yesno:'true,false' }}) {
+                const btn = document.createElement('button');
+                btn.id = 'pwaPushBtn';
+                btn.className = 'btn btn-secondary p-2 position-fixed';
+                btn.style = 'right:20px; bottom:80px; z-index:9999; border-radius: 50%;';
+                btn.innerHTML = '<i class="fas fa-bell"></i>';
+                btn.title = 'Enable Notifications';
+                btn.addEventListener('click', async function () {
+                    if (Notification.permission === 'granted') {
+                        enablePush();
+                    } else if (Notification.permission === 'denied') {
+                        alert('Notifications are blocked in your browser settings.');
+                    } else {
+                        const p = await Notification.requestPermission();
+                        if (p === 'granted') enablePush();
+                    }
+                });
+                document.body.appendChild(btn);
+            }
+        })();
+
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 

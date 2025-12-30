@@ -13,6 +13,7 @@ urlpatterns = [
     path('pending-registrations/', views.pending_registrations, name='pending_registrations'),
     path('logout/', auth_views.LogoutView.as_view(next_page='predictions:home'), name='logout'),
     path('predict/', views.predict_view, name='predict'),
+    path('recommend/', views.recommend_view, name='recommend'),
     path('history/', views.history_view, name='history'),
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('chatbot/', views.chatbot_view, name='chatbot'),
@@ -25,5 +26,16 @@ urlpatterns = [
     path('simulator/', views.simulator_view, name='simulator'),
     path('api/simulate/', views.api_simulate_risk, name='api_simulate'),
     path('export-pdf/', views.export_report_pdf, name='export_pdf'),
+    path('roadmap/', views.roadmap_view, name='roadmap'),
     path('api/ai-health-check/', views.ai_health_check, name='ai_health_check'),
+    # PWA offline fallback
+    path('offline.html', views.offline, name='offline'),
+    # Service worker served at root
+    path('service-worker.js', views.service_worker, name='service_worker'),
+
+    # Push API endpoints
+    path('api/push/public-key/', views.push_public_key, name='push_public_key'),
+    path('api/push/subscribe/', views.push_subscribe, name='push_subscribe'),
+    path('api/push/unsubscribe/', views.push_unsubscribe, name='push_unsubscribe'),
+    path('api/push/send-test/', views.push_send_test, name='push_send_test'),
 ]

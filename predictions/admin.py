@@ -126,6 +126,15 @@ class CustomUserAdmin(DjangoUserAdmin):
 admin.site.register(Assessment)
 admin.site.register(LabSearch)
 
+# Allow admin management of push subscriptions
+from .models import PushSubscription
+
+@admin.register(PushSubscription)
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'created_at')
+    readonly_fields = ('endpoint', 'keys', 'created_at')
+    search_fields = ('user__username', 'endpoint')
+
 # Make the admin interface minimal: show only a link to Pending Registrations from the admin index.
 # We keep the registrations as-is but replace the index template to a minimal one that only exposes the pending registrations feature.
 admin.site.site_header = "HeartGuard AI Admin"

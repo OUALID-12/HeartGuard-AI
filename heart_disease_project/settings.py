@@ -123,4 +123,9 @@ INACTIVITY_TIMEOUT = int(os.getenv('INACTIVITY_TIMEOUT', 900))
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@heartguard.ai')
 
+# VAPID keys for Web Push (set these in your environment for production):
+VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
+VAPID_EMAIL = os.getenv('VAPID_EMAIL', '') or f"mailto:{DEFAULT_FROM_EMAIL}"
+
 

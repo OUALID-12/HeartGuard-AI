@@ -15,6 +15,80 @@
     </div>
 </div>
 
+<!-- Smart Alerts Section -->
+{% if alerts %}
+<div class="row mb-4">
+    <div class="col-12">
+        {% for alert in alerts %}
+        <div class="alert alert-dismissible fade show shadow-sm rounded-4 border-0 d-flex align-items-center mb-3
+             {% if alert.alert_type == 'TREND' %}alert-danger bg-danger text-white{% else %}alert-warning bg-warning text-dark{% endif %}"
+            role="alert">
+            <div class="me-3 rounded-circle bg-white bg-opacity-25 p-2 align-self-start mt-1">
+                {% if alert.alert_type == 'TREND' %}
+                <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                <i class="fas fa-calendar-check"></i>
+                {% endif %}
+            </div>
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">
+                    {% if alert.alert_type == 'TREND' %}Critical Health Alert{% else %}Wellness Reminder{% endif %}
+                </h5>
+                <p class="mb-0 small opacity-90">{{ alert.message }}</p>
+                {% if alert.is_sent_via_email or alert.is_sent_via_sms %}
+                <div class="mt-2 text-xs opacity-75">
+                    <i class="fas fa-paper-plane me-1"></i> Sent via {% if alert.is_sent_via_email %}Email{% endif %}{% if alert.is_sent_via_email and alert.is_sent_via_sms %} & {% endif %}{% if alert.is_sent_via_sms %}SMS{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <button type="button" class="btn-close {% if alert.alert_type == 'TREND' %}btn-close-white{% endif %}"
+                data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Gamification / Health Score -->
+{% if metrics.health_score is not None %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 bg-gradient-primary text-white overflow-hidden position-relative">
+            <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                <i class="fas fa-trophy fa-10x"></i>
+            </div>
+            <div class="card-body p-4 p-lg-5 position-relative z-index-1">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-circle bg-white text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-heartbeat fa-2x"></i>
+                            </div>
+                            <div>
+                                <h2 class="fw-bold mb-0">Heart Health Score: {{ metrics.health_score }}</h2>
+                                <p class="mb-0 opacity-75">Keep up the good work! You are on Level {{ metrics.user_level
+                                    }}</p>
+                            </div>
+                        </div>
+                        <div class="progress bg-white bg-opacity-25 rounded-pill" style="height: 10px;">
+                            <div class="progress-bar bg-warning rounded-pill" role="progressbar"
+                                style="width: {{ metrics.level_progress }}%;"
+                                aria-valuenow="{{ metrics.level_progress }}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2 small opacity-75">
+                            <span>Level {{ metrics.user_level }}</span>
+                            <span>{{ metrics.level_progress }} / 100 points to next level</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Stats Row -->
 <div class="row g-4 mb-5">
     <div class="col-xl-3 col-md-6">

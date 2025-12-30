@@ -39,3 +39,54 @@ class PendingRegistrationsAccessTests(TestCase):
         self.assertNotIn('Prediction', resp.content.decode())
 
 
+class PWATests(TestCase):
+    def setUp(self):
+        self.client = self.client
+        self.user = User.objects.create_user(username='pwatest', password='pass')
+
+    def test_manifest_exists(self):
+        import json, os
+        static_manifest = os.path.join('static', 'manifest.json')
+        self.assertTrue(os.path.exists(static_manifest))
+        with open(static_manifest, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        self.assertIn('name', data)
+
+    def test_service_worker_served(self):
+        resp = self.client.get('/service-worker.js')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('CACHE_NAME', resp.content.decode('utf-8'))
+
+    def test_push_public_key_endpoint(self):
+        resp = self.client.get('/api/push/public-key/')
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn('publicKey', data)
+
+    def test_subscribe_requires_login(self):
+        import json
+        resp = self.client.post('/api/push/subscribe/', data=json.dumps({'endpoint':'https://example.test/endpoint','keys':{}}), content_type='application/json')
+        # Should redirect to login or forbidden
+        self.assertIn(resp.status_code, (302, 403))
+
+    def test_subscribe_flow(self):
+        import json
+        self.client.force_login(self.user)
+        payload = {'endpoint':'https://example.test/endpoint','keys':{'p256dh':'abc','auth':'xyz'}}
+        resp = self.client.post('/api/push/subscribe/', data=json.dumps(payload), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        from predictions.models import PushSubscription
+        self.assertTrue(PushSubscription.objects.filter(endpoint=payload['endpoint']).exists())
+
+    def test_unsubscribe_api_and_ui_flow(self):
+        import json
+        self.client.force_login(self.user)
+        payload = {'endpoint':'https://example.test/to_delete','keys':{'p256dh':'a','auth':'b'}}
+        self.client.post('/api/push/subscribe/', data=json.dumps(payload), content_type='application/json')
+        # Unsubscribe via API
+        resp = self.client.post('/api/push/unsubscribe/', data=json.dumps({'endpoint': payload['endpoint']}), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        from predictions.models import PushSubscription
+        self.assertFalse(PushSubscription.objects.filter(endpoint=payload['endpoint']).exists())
+
+

@@ -109,3 +109,42 @@ def generate_medical_pdf(user, predictions, assessments, lab_searches):
     doc.build(elements)
     buffer.seek(0)
     return buffer
+
+
+# --- Push notification helper using pywebpush ---
+import json
+from django.conf import settings
+try:
+    from pywebpush import webpush, WebPushException
+except Exception:
+    webpush = None
+    WebPushException = Exception
+
+
+def send_push(subscription_info, payload: dict):
+    """Send a push notification using pywebpush. subscription_info is the dict obtained from the client subscription.
+    Returns dict with 'success' True/False and 'detail'.
+    """
+    if webpush is None:
+        return {'success': False, 'detail': 'pywebpush not installed'}
+
+    vapid_private = getattr(settings, 'VAPID_PRIVATE_KEY', None)
+    vapid_public = getattr(settings, 'VAPID_PUBLIC_KEY', None)
+    vapid_email = getattr(settings, 'VAPID_EMAIL', None) or f"mailto:{getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com')}"
+
+    if not (vapid_private and vapid_public):
+        return {'success': False, 'detail': 'VAPID keys not configured'}
+
+    try:
+        webpush(
+            subscription_info=subscription_info,
+            data=json.dumps(payload),
+            vapid_private_key=vapid_private,
+            vapid_claims={"sub": vapid_email}
+        )
+        return {'success': True, 'detail': 'Sent'}
+    except WebPushException as ex:
+        # Return useful debug
+        return {'success': False, 'detail': str(ex)}
+    except Exception as ex:
+        return {'success': False, 'detail': str(ex)}
