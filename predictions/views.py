@@ -9,7 +9,7 @@ from django.conf import settings
 import json
 import requests
 from .forms import PatientDataForm, UserUpdateForm
-from .models import Patient, Prediction, Assessment, LabSearch, Alert, GymRecommendation
+from .models import Patient, Prediction, Assessment, LabSearch, Alert, GymRecommendation, BodyFatPrediction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -246,6 +246,16 @@ def service_worker(request):
     except Exception as e:
         return HttpResponse('// service worker not found', content_type='application/javascript', status=404)
 
+@never_cache
+def manifest(request):
+    manifest_path = os.path.join(settings.BASE_DIR, 'static', 'manifest.json')
+    try:
+        with open(manifest_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='application/json')
+    except Exception as e:
+        return HttpResponse('{"error": "manifest not found"}', content_type='application/json', status=404)
+
 
 # ---- Push subscription endpoints ----
 import json
@@ -390,115 +400,96 @@ def recommend_view(request):
             'Gender': request.POST.get('gender'),
             'Weight (kg)': request.POST.get('weight'),
             'Height (m)': request.POST.get('height'),
-            'Max_BPM': request.POST.get('max_bpm'),
             'Avg_BPM': request.POST.get('avg_bpm'),
-            'Resting_BPM': request.POST.get('resting_bpm'),
             'Session_Duration (hours)': request.POST.get('duration'),
-            'Calories_Burned': request.POST.get('calories'),
-            'Fat_Percentage': request.POST.get('fat_percentage'),
-            'Water_Intake (liters)': request.POST.get('water'),
-            'Workout_Frequency (days/week)': request.POST.get('frequency'),
-            'Experience_Level': request.POST.get('experience'),
-            'BMI': request.POST.get('bmi')
         }
+        
+        # Determine top_k from POST
+        try:
+            top_k = int(request.POST.get('top_k', 1))
+        except (ValueError, TypeError):
+            top_k = 1
+
+        # Cast numeric fields
+        processed_inputs = {}
+        for k, v in inputs.items():
+            if v and v.strip():
+                try:
+                    processed_inputs[k] = float(v)
+                except ValueError:
+                    processed_inputs[k] = v
+            else:
+                processed_inputs[k] = None
+
+        try:
+            # Get recommendations
+            recs = recommender.recommend(processed_inputs, top_k=top_k)
+            result = [{'label': label, 'probability': prob} for label, prob in recs]
+
+            # Save to database if we have a top result
+            if result:
+                top_result = result[0]
+                GymRecommendation.objects.create(
+                    user=request.user,
+                    recommended_workout=top_result['label'],
+                    confidence=top_result['probability'],
+                    inputs={'features': processed_inputs, 'recommendations': result}
+                )
+                messages.success(request, f"Recommendation generated: {top_result['label']}")
+        except Exception as e:
+            messages.error(request, f"Error generating recommendation: {str(e)}")
+            print(f"Recommend View Error: {e}")
+
+    return render(request, 'predictions/recommend.html', {'result': result})
 
 
 @login_required
 def bodyfat_view(request):
     """Estimate percent body fat from body measurements."""
+    from .forms import BodyFatForm
     result = None
+    form = BodyFatForm()
+
     if request.method == 'POST':
-        # Collect inputs with the same names as CSV headers where possible
-        inputs = {
-            'Age': request.POST.get('Age'),
-            'Weight': request.POST.get('Weight'),
-            'Height': request.POST.get('Height'),
-            'Neck': request.POST.get('Neck'),
-            'Chest': request.POST.get('Chest'),
-            'Abdomen': request.POST.get('Abdomen'),
-            'Hip': request.POST.get('Hip'),
-            'Thigh': request.POST.get('Thigh'),
-            'Knee': request.POST.get('Knee'),
-            'Ankle': request.POST.get('Ankle'),
-            'Biceps': request.POST.get('Biceps'),
-            'Forearm': request.POST.get('Forearm'),
-            'Wrist': request.POST.get('Wrist')
-        }
-
-        # Cast numeric fields
-        for k, v in list(inputs.items()):
+        form = BodyFatForm(request.POST)
+        if form.is_valid():
+            # Get cleaned form data
+            inputs = form.cleaned_data.copy()
+            
+            # Prepare inputs for predictor (predictor expects certain keys)
+            # The form uses 'Age', 'Weight', etc., which match the predictor
+            
+            from ml_model.predict_bodyfat import BodyFatPredictor
+            bf = BodyFatPredictor()
             try:
-                if v is None or v == '':
-                    inputs[k] = None
-                else:
-                    inputs[k] = float(v)
-            except Exception:
-                inputs[k] = None
+                pred = bf.predict(inputs)
+                if pred:
+                    result = pred
+                    # Prefer model prediction; fall back to Siri if model missing
+                    predicted_value = None
+                    if pred.get('bodyfat_percent_model') is not None:
+                        predicted_value = float(pred.get('bodyfat_percent_model'))
+                    elif pred.get('bodyfat_percent_siri') is not None:
+                        predicted_value = float(pred.get('bodyfat_percent_siri'))
 
-        from ml_model.predict_bodyfat import BodyFatPredictor
-        bf = BodyFatPredictor()
-        try:
-            pred = bf.predict(inputs)
-            if pred:
-                result = pred
-                # Save to DB
-                try:
-                    BodyFatPrediction.objects.create(
-                        user=request.user,
-                        patient=None,
-                        predicted_percent=float(pred.get('bodyfat_percent')),
-                        uncertainty=pred.get('uncertainty'),
-                        inputs=inputs
-                    )
-                except Exception as e:
-                    print(f"Failed to save BodyFatPrediction: {e}")
-        except Exception as e:
-            from django.contrib import messages
-            messages.error(request, f"Error during body fat prediction: {e}")
+                    # Save to DB
+                    try:
+                        BodyFatPrediction.objects.create(
+                            user=request.user,
+                            patient=None,
+                            predicted_percent=predicted_value,
+                            uncertainty=pred.get('uncertainty'),
+                            inputs=inputs
+                        )
+                        messages.success(request, 'Body fat prediction calculated successfully.')
+                    except Exception as e:
+                        print(f"Failed to save BodyFatPrediction: {e}")
+                        messages.warning(request, 'Prediction calculated but could not be saved to history.')
+            except Exception as e:
+                messages.error(request, f"Error during body fat prediction: {e}")
+                print(f"Body Fat Prediction Error: {e}")
 
-    return render(request, 'predictions/bodyfat.html', {'result': result})
-        # Cast numeric fields where possible
-        for k, v in list(inputs.items()):
-            try:
-                if v is None or v == '':
-                    inputs[k] = None
-                else:
-                    # cast floats
-                    if k in ['Age', 'Weight (kg)', 'Height (m)', 'Max_BPM', 'Avg_BPM', 'Resting_BPM', 'Session_Duration (hours)', 'Calories_Burned', 'Fat_Percentage', 'Water_Intake (liters)', 'Workout_Frequency (days/week)', 'Experience_Level', 'BMI']:
-                        inputs[k] = float(v)
-            except Exception:
-                inputs[k] = None
-
-        try:
-            top_k = 1
-            try:
-                top_k = int(request.POST.get('top_k', '1'))
-            except Exception:
-                top_k = 1
-
-            res = recommender.recommend(inputs, top_k=top_k)
-            if res:
-                # Build result representation for template (list of dicts)
-                result = [{'label': label, 'probability': round(prob, 4)} for (label, prob) in res]
-                # Save top-1 recommendation to DB and record all in inputs
-                try:
-                    top_label, top_prob = res[0]
-                    saved_inputs = {'features': inputs, 'recommendations': [{'label': l, 'probability': p} for l, p in res]}
-                    GymRecommendation.objects.create(
-                        user=request.user,
-                        patient=None,
-                        recommended_workout=top_label,
-                        confidence=float(top_prob),
-                        inputs=saved_inputs
-                    )
-                except Exception as e:
-                    print(f"Failed to save GymRecommendation: {e}")
-        except Exception as e:
-            messages.error(request, f'Error during recommendation: {e}')
-
-    return render(request, 'predictions/recommend.html', {
-        'result': result
-    })
+    return render(request, 'predictions/bodyfat.html', {'form': form, 'result': result})
 
 
 @require_POST
@@ -550,6 +541,7 @@ def bodyfat_json(request):
         return JsonResponse({'success': False, 'detail': 'Invalid JSON'}, status=400)
 
     features = payload.get('features', {}) if isinstance(payload, dict) else {}
+    explain_flag = payload.get('explain', False)
 
     # Cast numeric fields
     for k, v in list(features.items()):
@@ -566,11 +558,34 @@ def bodyfat_json(request):
         except Exception:
             features[k] = None
 
+    # Add explain flag into features for the predictor convenience
+    if explain_flag:
+        features['explain'] = True
+
     from ml_model.predict_bodyfat import BodyFatPredictor
     bf = BodyFatPredictor()
     try:
         out = bf.predict(features)
         return JsonResponse({'success': True, 'prediction': out})
+    except Exception as e:
+        return JsonResponse({'success': False, 'detail': str(e)}, status=500)
+
+
+@staff_member_required
+def bodyfat_model_info(request):
+    """Admin-only JSON endpoint exposing training artifacts and metrics."""
+    try:
+        from ml_model.predict_bodyfat import BodyFatPredictor
+        bf = BodyFatPredictor()
+        bf.load()
+        artifacts = bf.artifacts or {}
+        info = {
+            'feature_names': artifacts.get('feature_names'),
+            'feature_importances': artifacts.get('feature_importances'),
+            'baseline': artifacts.get('baseline') or {},
+            'model_version': artifacts.get('model_version') or 'v1'
+        }
+        return JsonResponse({'success': True, 'model_info': info})
     except Exception as e:
         return JsonResponse({'success': False, 'detail': str(e)}, status=500)
 

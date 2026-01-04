@@ -12,7 +12,7 @@ class PWATests(TestCase):
         self.user = User.objects.create_user(username='pwatest', password='pass')
 
     def test_manifest_exists(self):
-        resp = self.client.get('/static/manifest.json')
+        resp = self.client.get('/manifest.json')
         self.assertEqual(resp.status_code, 200)
         self.assertIn('name', resp.json())
 

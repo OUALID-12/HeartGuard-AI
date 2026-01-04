@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/recommend/', views.recommend_json, name='recommend_api'),
     path('bodyfat/', views.bodyfat_view, name='bodyfat'),
     path('api/bodyfat/', views.bodyfat_json, name='bodyfat_api'),
+    path('bodyfat/model-info/', views.bodyfat_model_info, name='bodyfat_model_info'),
     path('history/', views.history_view, name='history'),
     path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
     path('chatbot/', views.chatbot_view, name='chatbot'),
@@ -36,7 +37,7 @@ urlpatterns = [
     # Service worker served at root
     path('service-worker.js', views.service_worker, name='service_worker'),
 
-    # Push API endpoints
+    path('manifest.json', views.manifest, name='manifest'),
     path('api/push/public-key/', views.push_public_key, name='push_public_key'),
     path('api/push/subscribe/', views.push_subscribe, name='push_subscribe'),
     path('api/push/unsubscribe/', views.push_unsubscribe, name='push_unsubscribe'),

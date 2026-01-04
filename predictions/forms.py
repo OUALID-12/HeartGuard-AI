@@ -30,22 +30,153 @@ class PatientDataForm(forms.ModelForm):
             'ca': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0-3'}),
             'thal': forms.Select(attrs={'class': 'form-select'}),
         }
-        widgets = {
-            'patient_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional: Name (e.g. Dad, Self)'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 45'}),
-            'sex': forms.Select(attrs={'class': 'form-select'}),
-            'chest_pain_type': forms.Select(attrs={'class': 'form-select'}),
-            'resting_bp': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 120'}),
-            'cholesterol': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 200'}),
-            'fasting_bs': forms.Select(attrs={'class': 'form-select'}),
-            'resting_ecg': forms.Select(attrs={'class': 'form-select'}),
-            'max_heart_rate': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 150'}),
-            'exercise_angina': forms.Select(attrs={'class': 'form-select'}),
-            'oldpeak': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'placeholder': 'e.g. 1.0'}),
-            'st_slope': forms.Select(attrs={'class': 'form-select'}),
-            'ca': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0-3'}),
-            'thal': forms.Select(attrs={'class': 'form-select'}),
-        }
+
+class BodyFatForm(forms.Form):
+    """Form for body fat percentage prediction input."""
+    Density = forms.FloatField(
+        label='Density (gm/cm^3, optional)',
+        required=False,
+        min_value=0.9,
+        max_value=1.2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 1.0708',
+            'step': '0.0001'
+        }),
+        help_text="If provided, Siri's equation will also be computed (495/D - 450)."
+    )
+
+    Age = forms.FloatField(
+        label='Age (years)',
+        min_value=18,
+        max_value=100,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 25',
+            'step': '0.1'
+        })
+    )
+    Weight = forms.FloatField(
+        label='Weight (lbs)',
+        min_value=50,
+        max_value=400,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 180',
+            'step': '0.1'
+        })
+    )
+    Height = forms.FloatField(
+        label='Height (inches)',
+        min_value=50,
+        max_value=90,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 70',
+            'step': '0.1'
+        })
+    )
+    Neck = forms.FloatField(
+        label='Neck circumference (cm)',
+        min_value=25,
+        max_value=50,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 38.5',
+            'step': '0.1'
+        })
+    )
+    Chest = forms.FloatField(
+        label='Chest circumference (cm)',
+        min_value=70,
+        max_value=150,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 100',
+            'step': '0.1'
+        })
+    )
+    Abdomen = forms.FloatField(
+        label='Abdomen circumference (cm)',
+        min_value=60,
+        max_value=150,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 95',
+            'step': '0.1'
+        })
+    )
+    Hip = forms.FloatField(
+        label='Hip circumference (cm)',
+        min_value=70,
+        max_value=150,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 105',
+            'step': '0.1'
+        })
+    )
+    Thigh = forms.FloatField(
+        label='Thigh circumference (cm)',
+        min_value=40,
+        max_value=100,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 60',
+            'step': '0.1'
+        })
+    )
+    Knee = forms.FloatField(
+        label='Knee circumference (cm)',
+        min_value=25,
+        max_value=50,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 38',
+            'step': '0.1'
+        })
+    )
+    Ankle = forms.FloatField(
+        label='Ankle circumference (cm)',
+        min_value=15,
+        max_value=30,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 22',
+            'step': '0.1'
+        })
+    )
+    Biceps = forms.FloatField(
+        label='Biceps circumference (cm)',
+        min_value=20,
+        max_value=50,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 32',
+            'step': '0.1'
+        })
+    )
+    Forearm = forms.FloatField(
+        label='Forearm circumference (cm)',
+        min_value=20,
+        max_value=40,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 28',
+            'step': '0.1'
+        })
+    )
+    Wrist = forms.FloatField(
+        label='Wrist circumference (cm)',
+        min_value=13,
+        max_value=22,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 18',
+            'step': '0.1'
+        })
+    )
+    explain = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()

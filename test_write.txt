@@ -1,0 +1,1 @@
+TEST FILE WITH SPACES: {% if a == b %} YES {% endif %}

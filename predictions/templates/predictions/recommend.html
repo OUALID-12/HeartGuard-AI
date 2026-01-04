@@ -45,13 +45,13 @@
   </form>
 
   {% if result %}
-    <hr/>
-    <h4>Recommendations</h4>
-    <ul>
-      {% for r in result %}
-        <li><strong>{{ r.label }}</strong> — Confidence: {{ r.probability|floatformat:2 }}</li>
-      {% endfor %}
-    </ul>
+  <hr />
+  <h4>Recommendations</h4>
+  <ul>
+    {% for r in result %}
+    <li><strong>{{ r.label }}</strong> — Confidence: {{ r.probability|floatformat:2 }}</li>
+    {% endfor %}
+  </ul>
   {% endif %}
 </div>
 {% endblock %}

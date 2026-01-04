@@ -1,0 +1,67 @@
+{% extends 'predictions/base.html' %}
+{% load static %}
+
+{% block title %}Health History - CardioAI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold text-dark">Health History</h1>
+        <a href="{% url 'predictions:predict' %}" class="btn btn-primary rounded-pill px-4">
+            <i class="fas fa-plus me-2"></i> New Analysis
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        {% if timeline %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Patient</th>
+                        <th>Result</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in timeline %}
+                    <tr>
+                        <td>{{ entry.date|date:"F d, Y @ H:i" }}</td>
+                        <td>
+                            <span class="badge rounded-pill bg-light text-dark border">
+                                {{ entry.title }}
+                            </span>
+                        </td>
+                        <td>{{ entry.name }}</td>
+                        <td>
+                            <span
+                                class="badge rounded-pill {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}bg-info{% endif %}">
+                                {{ entry.result }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if entry.type == 'prediction' %}
+                            Prob: {{ entry.probability }}
+                            {% elif entry.type == 'assessment' %}
+                            Score: {{ entry.score }}
+                            {% elif entry.type == 'lab' %}
+                            Query: {{ entry.query }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-history fa-3x text-muted mb-3 opacity-25"></i>
+            <h5>No history found</h5>
+            <p class="text-muted">Start by making a new prediction or assessment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

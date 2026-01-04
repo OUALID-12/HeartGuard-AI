@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <!-- PWA manifest & mobile meta -->
-    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d6efd">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="{% static 'icons/icon-192.svg' %}">
@@ -337,7 +337,6 @@
 
             async function enablePush() {
                 try {
-                    // Get VAPID public key
                     const pkResp = await fetch('/api/push/public-key/');
                     const pkJson = await pkResp.json();
                     const vapidPublicKey = pkJson.publicKey;
@@ -348,7 +347,6 @@
                         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
                     });
 
-                    // Send subscription to server
                     await fetch('/api/push/subscribe/', {
                         method: 'POST',
                         headers: {
@@ -376,26 +374,26 @@
                 return outputArray;
             }
 
-            // Only show the button if user is authenticated (server template provides a flag)
-            if ({{ user.is_authenticated|yesno:'true,false' }}) {
-                const btn = document.createElement('button');
-                btn.id = 'pwaPushBtn';
-                btn.className = 'btn btn-secondary p-2 position-fixed';
-                btn.style = 'right:20px; bottom:80px; z-index:9999; border-radius: 50%;';
-                btn.innerHTML = '<i class="fas fa-bell"></i>';
-                btn.title = 'Enable Notifications';
-                btn.addEventListener('click', async function () {
-                    if (Notification.permission === 'granted') {
-                        enablePush();
-                    } else if (Notification.permission === 'denied') {
-                        alert('Notifications are blocked in your browser settings.');
-                    } else {
-                        const p = await Notification.requestPermission();
-                        if (p === 'granted') enablePush();
-                    }
-                });
-                document.body.appendChild(btn);
-            }
+            // Only show the button if user is authenticated
+            {% if user.is_authenticated %}
+            const btn = document.createElement('button');
+            btn.id = 'pwaPushBtn';
+            btn.className = 'btn btn-secondary p-2 position-fixed';
+            btn.style = 'right:20px; bottom:80px; z-index:9999; border-radius: 50%;';
+            btn.innerHTML = '<i class="fas fa-bell"></i>';
+            btn.title = 'Enable Notifications';
+            btn.addEventListener('click', async function () {
+                if (Notification.permission === 'granted') {
+                    enablePush();
+                } else if (Notification.permission === 'denied') {
+                    alert('Notifications are blocked in your browser settings.');
+                } else {
+                    const p = await Notification.requestPermission();
+                    if (p === 'granted') enablePush();
+                }
+            });
+            document.body.appendChild(btn);
+            {% endif %}
         })();
 
     </script>

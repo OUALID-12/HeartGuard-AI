@@ -16,9 +16,9 @@
                 <form class="d-flex align-items-center me-2">
                     <select name="patient" class="form-select rounded-pill shadow-sm pe-5"
                         onchange="this.form.submit()">
-                        <option value="All" {% if selected_patient == "All" %}selected{% endif %}>All Patients</option>
+                        <option value="All" {% if selected_patient=="All" %}selected{% endif %}>All Patients</option>
                         {% for name in patient_names %}
-                        <option value="{{ name }}" {% if selected_patient == name %}selected{% endif %}>{{ name }}
+                        <option value="{{ name }}" {% if selected_patient==name %}selected{% endif %}>{{ name }}
                         </option>
                         {% endfor %}
                     </select>
@@ -83,7 +83,7 @@
                     <div class="card-body p-4">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <div class="timeline-icon rounded-circle d-flex align-items-center justify-content-center {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}border-info{% endif %} text-white"
+                                <div class="timeline-icon rounded-circle d-flex align-items-center justify-content-center {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}bg-info{% endif %} text-white"
                                     style="width: 50px; height: 50px;">
                                     {% if entry.type == 'prediction' %}
                                     <i class="fas fa-stethoscope"></i>
@@ -109,7 +109,7 @@
                                     </div>
                                     <div class="text-end">
                                         <span
-                                            class="badge rounded-pill px-3 py-2 {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}border-info{% endif %} bg-opacity-10 {% if entry.type == 'prediction' %}text-primary{% elif entry.type == 'assessment' %}text-success{% else %}text-info{% endif %} border {% if entry.type == 'prediction' %}border-primary{% elif entry.type == 'assessment' %}border-success{% else %}border-info{% endif %} border-opacity-25">
+                                            class="badge rounded-pill px-3 py-2 {% if entry.type == 'prediction' %}bg-primary{% elif entry.type == 'assessment' %}bg-success{% else %}bg-info{% endif %} bg-opacity-10 {% if entry.type == 'prediction' %}text-primary{% elif entry.type == 'assessment' %}text-success{% else %}text-info{% endif %} border {% if entry.type == 'prediction' %}border-primary{% elif entry.type == 'assessment' %}border-success{% else %}border-info{% endif %} border-opacity-25">
                                             {{ entry.result|default:entry.type|title }}
                                         </span>
                                     </div>

@@ -2,7 +2,7 @@ const CACHE_NAME = 'heartguard-cache-v1';
 const PRECACHE_URLS = [
   '/',
   '/offline.html',
-  '/static/manifest.json',
+  '/manifest.json',
   '/static/css/style.css',
   '/static/icons/icon-192.svg',
   '/static/icons/icon-512.svg'

@@ -1,4 +1,4 @@
-{% extends 'predictions/base.html' %}
+content = r"""{% extends 'predictions/base.html' %}
 {% load static %}
 
 {% block title %}Health History - CardioAI{% endblock %}
@@ -227,3 +227,6 @@
     }
 </style>
 {% endblock %}
+"""
+with open('predictions/templates/predictions/history_v2.html', 'w', encoding='utf-8') as f:
+    f.write(content)

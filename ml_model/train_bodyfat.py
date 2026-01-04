@@ -24,7 +24,7 @@ def train_and_save_bodyfat(filepath=None, save_name='bodyfat_regressor.pkl', sea
     df.columns = [c.strip() for c in df.columns]
 
     # Target variable: Percent body fat (column named 'BodyFat' or 'Percent body fat')
-    # In this dataset it appears as 'BodyFat' or 'BodyFat' after header
+    # In this dataset it appears as 'BodyFat' (second column)
     if 'BodyFat' in df.columns:
         y = df['BodyFat']
     elif 'Body Fat' in df.columns:
@@ -34,6 +34,22 @@ def train_and_save_bodyfat(filepath=None, save_name='bodyfat_regressor.pkl', sea
     else:
         # fallback: try second column
         y = df.iloc[:, 1]
+
+    # Derive additional features (BMI, Waist-to-Hip)
+    # Dataset uses Weight (lbs) and Height (inches). Convert to metric for BMI calculation
+    try:
+        df['Weight_kg'] = df['Weight'] * 0.45359237
+        df['Height_m'] = df['Height'] * 0.0254
+        df['BMI'] = df['Weight_kg'] / (df['Height_m'] ** 2)
+    except Exception:
+        # If columns missing or non-numeric, skip
+        pass
+
+    # Waist-to-hip ratio (Abdomen/Hip) — useful indicator of central adiposity
+    try:
+        df['WHR'] = df['Abdomen'] / df['Hip']
+    except Exception:
+        pass
 
     # Drop target and any non-feature cols
     X = df.drop(columns=[y.name])
@@ -80,18 +96,44 @@ def train_and_save_bodyfat(filepath=None, save_name='bodyfat_regressor.pkl', sea
     r2 = r2_score(y_test, preds)
     print(f"Test RMSE: {rmse:.4f}, R2: {r2:.4f}")
 
+    # Train a simple linear baseline for comparison
+    try:
+        from sklearn.linear_model import LinearRegression
+        baseline_pipe = Pipeline([
+            ('imputer', SimpleImputer(strategy='median')),
+            ('scaler', StandardScaler()),
+            ('lr', LinearRegression())
+        ])
+        baseline_pipe.fit(X_train, y_train)
+        baseline_preds = baseline_pipe.predict(X_test)
+        baseline_rmse = np.sqrt(mean_squared_error(y_test, baseline_preds))
+    except Exception:
+        baseline_rmse = None
+
+    # Extract feature importances if available (RandomForest)
+    feature_importances = None
+    try:
+        rf = best.named_steps.get('rf')
+        if hasattr(rf, 'feature_importances_'):
+            fi = rf.feature_importances_
+            feature_importances = dict(zip(X.columns.tolist(), fi.tolist()))
+    except Exception:
+        feature_importances = None
+
     save_dir = os.path.join(os.path.dirname(__file__), 'saved_models')
     os.makedirs(save_dir, exist_ok=True)
     artifacts = {
         'model': best,
         'feature_names': X.columns.tolist(),
-        'best_params': best_params
+        'best_params': best_params,
+        'feature_importances': feature_importances,
+        'baseline': {'linear_rmse': baseline_rmse}
     }
     model_path = os.path.join(save_dir, save_name)
     joblib.dump(artifacts, model_path)
     print(f"Saved bodyfat model to {model_path}")
 
-    return {'rmse': rmse, 'r2': r2, 'model_path': model_path, 'best_params': best_params}
+    return {'rmse': rmse, 'r2': r2, 'model_path': model_path, 'best_params': best_params, 'baseline_rmse': baseline_rmse, 'feature_importances': feature_importances}
 
 
 if __name__ == '__main__':
